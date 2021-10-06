@@ -38,7 +38,8 @@ func NewBookController(bookServ service.BookService, jwtServ service.JWTService)
 func (c *bookController) All(context *gin.Context) {
 
 	var books []entity.Book = c.bookService.All()
-	res := helper.BuildResponse(true, "OK", books)
+	res := helper.BuildResponseWithCount(true, "OK", books, len(books))
+	fmt.Println("Books count", len(books))
 	context.JSON(http.StatusOK, res)
 }
 

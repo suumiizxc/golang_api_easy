@@ -6,4 +6,11 @@ type User struct {
 	Email    string `gorm:"uniqueIndex;type:varchar(255)" json:"email"`
 	Password string `gorm:"->;<-;not null" json:"-"`
 	Token    string `gorm:"-" json:"token,omitempty"`
+
+	Registration      string `gorm:"type:varchar(100)" json:"registration"`
+	PhoneNumber       string `gorm:"type:varchar(20)" json:"phone_number"`
+	FirstName         string `gorm:"type:varchar(255)" json:"first_name"`
+	LastName          string `gorm:"type:varchar(255)" json:"last_name"`
+	BankName          string `gorm:"type:varchar(255)" json:"bank_name"`
+	BankAccountNumber string `gorm:"type:varchar(100)" json:"bank_account_number"`
 }
