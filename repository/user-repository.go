@@ -2,6 +2,7 @@ package repository
 
 import (
 	"log"
+	"time"
 
 	"github.com/suumiizxc/golang_api/entity"
 	"golang.org/x/crypto/bcrypt"
@@ -35,6 +36,7 @@ func (db *userConnection) InsertUser(user entity.User) entity.User {
 
 func (db *userConnection) UpdateUser(user entity.User) entity.User {
 	user.Password = hashAndSalt([]byte(user.Password))
+	user.UpdatedAt = time.Now()
 	db.connection.Save(&user)
 	return user
 }

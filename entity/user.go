@@ -1,5 +1,7 @@
 package entity
 
+import "time"
+
 type User struct {
 	ID       uint64 `gorm:"primary_key:auto_increment" json:"id"`
 	Name     string `gorm:"type:varchar(255)" json:"name"`
@@ -7,10 +9,11 @@ type User struct {
 	Password string `gorm:"->;<-;not null" json:"-"`
 	Token    string `gorm:"-" json:"token,omitempty"`
 
-	Registration      string `gorm:"type:varchar(100)" json:"registration"`
-	PhoneNumber       string `gorm:"type:varchar(20)" json:"phone_number"`
-	FirstName         string `gorm:"type:varchar(255)" json:"first_name"`
-	LastName          string `gorm:"type:varchar(255)" json:"last_name"`
-	BankName          string `gorm:"type:varchar(255)" json:"bank_name"`
-	BankAccountNumber string `gorm:"type:varchar(100)" json:"bank_account_number"`
+	Registration      string    `gorm:"type:varchar(100)" json:"registration"`
+	PhoneNumber       string    `gorm:"type:varchar(20)" json:"phone_number"`
+	FirstName         string    `gorm:"type:varchar(255)" json:"first_name"`
+	LastName          string    `gorm:"type:varchar(255)" json:"last_name"`
+	BankName          string    `gorm:"type:varchar(255)" json:"bank_name"`
+	BankAccountNumber string    `gorm:"type:varchar(100)" json:"bank_account_number"`
+	UpdatedAt         time.Time `gorm:"column:updated_at" json:"updated_at"`
 }

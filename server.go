@@ -11,18 +11,21 @@ import (
 )
 
 var (
-	db             *gorm.DB                  = config.SetupDatabaseConnection()
-	userRepository repository.UserRepository = repository.NewUserRepository(db)
-	bookRepository repository.BookRepository = repository.NewBookRepository(db)
+	db              *gorm.DB                   = config.SetupDatabaseConnection()
+	userRepository  repository.UserRepository  = repository.NewUserRepository(db)
+	bookRepository  repository.BookRepository  = repository.NewBookRepository(db)
+	pharmRepository repository.PharmRepository = repository.NewPharmRepository(db)
 
-	jwtService  service.JWTService  = service.NewJWTService()
-	userService service.UserService = service.NewUserService(userRepository)
-	authService service.AuthService = service.NewAuthService(userRepository)
-	bookService service.BookService = service.NewBookService(bookRepository)
+	jwtService   service.JWTService   = service.NewJWTService()
+	userService  service.UserService  = service.NewUserService(userRepository)
+	authService  service.AuthService  = service.NewAuthService(userRepository)
+	bookService  service.BookService  = service.NewBookService(bookRepository)
+	pharmService service.PharmService = service.NewPharmService(pharmRepository)
 
-	authController controller.AuthController = controller.NewAuthController(authService, jwtService)
-	userController controller.UserController = controller.NewUserController(userService, jwtService)
-	bookController controller.BookController = controller.NewBookController(bookService, jwtService)
+	authController  controller.AuthController  = controller.NewAuthController(authService, jwtService)
+	userController  controller.UserController  = controller.NewUserController(userService, jwtService)
+	bookController  controller.BookController  = controller.NewBookController(bookService, jwtService)
+	pharmController controller.PharmController = controller.NewPharmController(pharmService)
 )
 
 func main() {
@@ -46,6 +49,11 @@ func main() {
 		bookRoutes.GET("/:id", bookController.FindByID)
 		bookRoutes.PUT("/:id", bookController.Update)
 		bookRoutes.DELETE("/:id", bookController.Delete)
+	}
+	pharmRoutes := r.Group("api/pharm")
+	{
+		pharmRoutes.POST("/", pharmController.Insert)
+		pharmRoutes.PUT("/", pharmController.Update)
 	}
 
 	r.Run()
