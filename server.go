@@ -47,7 +47,7 @@ func main() {
 		bookRoutes.GET("/", bookController.All)
 		bookRoutes.POST("/", bookController.Insert)
 		bookRoutes.GET("/:id", bookController.FindByID)
-		bookRoutes.PUT("/:id", bookController.Update)
+		bookRoutes.PUT("/", bookController.Update)
 		bookRoutes.DELETE("/:id", bookController.Delete)
 	}
 	pharmRoutes := r.Group("api/pharm")
