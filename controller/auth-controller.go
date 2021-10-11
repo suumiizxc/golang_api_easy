@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/suumiizxc/golang_api/dto"
 	"github.com/suumiizxc/golang_api/entity"
+	"github.com/suumiizxc/golang_api/external_api"
 	"github.com/suumiizxc/golang_api/helper"
 	"github.com/suumiizxc/golang_api/service"
 )
@@ -65,6 +66,8 @@ func (c *authController) Register(ctx *gin.Context) {
 		token := c.jwtService.GenerateToken(strconv.FormatUint(createUser.ID, 10))
 		createUser.Token = token
 		response := helper.BuildResponse(true, "OK!", createUser)
+		external_api.CreateLocal()
+		external_api.Uploader()
 		ctx.JSON(http.StatusCreated, response)
 
 	}

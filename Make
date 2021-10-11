@@ -5,7 +5,7 @@ export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 //DOCKER BUILD
 docker build -t golang_api .
 docker run -it -p 8080:8080 golang_api
-docker run -d -p 8080:8080 golang_api
+
 
 //INSOMNIA 
 scp Insomnia-All_2021-10-07.json root@178.128.83.147:/home/deploy/insomnia
