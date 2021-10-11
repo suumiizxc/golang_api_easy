@@ -11,7 +11,7 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-func Uploader() error {
+func Uploader() (string, error) {
 	// https://jto.nyc3.digitaloceanspaces.com
 	// The session the S3 Uploader will use
 	endpoint := "sgp1.digitaloceanspaces.com"
@@ -38,7 +38,7 @@ func Uploader() error {
 
 	f, err := os.Open(filename)
 	if err != nil {
-		return fmt.Errorf("failed to open file %q, %v", filename, err)
+		return "", fmt.Errorf("failed to open file %q, %v", filename, err)
 	}
 
 	// original_image, _, err := image.Decode(bytes.NewReader(fs))
@@ -68,8 +68,8 @@ func Uploader() error {
 		Body:        f,
 	})
 	if err != nil {
-		return fmt.Errorf("failed to upload file, %v", err)
+		return "", fmt.Errorf("failed to upload file, %v", err)
 	}
 	fmt.Printf("file uploaded to, %s\n", aws.StringValue(&result.Location))
-	return nil
+	return aws.StringValue(&result.Location), err
 }

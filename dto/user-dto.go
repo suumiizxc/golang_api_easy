@@ -11,8 +11,10 @@ type UserUpdateDTO struct {
 	LastName          string `json:"last_name" form:"last_name" binding:"required" validate:"last_name"`
 	BankName          string `json:"bank_name" form:"bank_name" binding:"required" validate:"bank_name"`
 	BankAccountNumber string `json:"bank_account_number" form:"bank_account_name" binding:"required" validate:"bank_account_number"`
-	UserType          string `json:"user_type" form:"user_type" binding:"require" validate:"user_type"`
-	// UpdatedAt         time.Time `json:"updated_at" form:"updated_at" binding:"required" validate:"UpdatedAt"`
+	BankAccountHolder string `json:"bank_account_holder" form:"bank_account_holder" binding:"required" validate:"bank_account_holder"`
+	UserType          string `json:"user_type" form:"user_type" binding:"required" validate:"user_type"`
+	// ProfileImage      string `json:"profile_image" form:"image" binding:"required" validate:"profile_image"`
+	// UpdatedAt         time.Time `json:"updated_at" form:"updated_at" binding:"required" validate:"updated_at"`
 }
 
 // type UserCreateDTO struct {
