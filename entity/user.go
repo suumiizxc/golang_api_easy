@@ -15,5 +15,6 @@ type User struct {
 	LastName          string    `gorm:"type:varchar(255)" json:"last_name"`
 	BankName          string    `gorm:"type:varchar(255)" json:"bank_name"`
 	BankAccountNumber string    `gorm:"type:varchar(100)" json:"bank_account_number"`
+	UserType          string    `gorm:"type:varchar(20)" json:"user_type"`
 	UpdatedAt         time.Time `gorm:"column:updated_at" json:"updated_at"`
 }

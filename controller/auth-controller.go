@@ -58,17 +58,24 @@ func (c *authController) Register(ctx *gin.Context) {
 		return
 	}
 
-	if !c.authService.IsDuplicateEmail(registerDTO.Email) {
-		response := helper.BuildErrorResponse("Failed to process request", "Duplicate email", helper.EmptyObj{})
-		ctx.JSON(http.StatusConflict, response)
-	} else {
-		createUser := c.authService.CreateUser(registerDTO)
-		token := c.jwtService.GenerateToken(strconv.FormatUint(createUser.ID, 10))
-		createUser.Token = token
-		response := helper.BuildResponse(true, "OK!", createUser)
-		external_api.CreateLocal()
-		external_api.Uploader()
-		ctx.JSON(http.StatusCreated, response)
+	if registerDTO.UserType == "admin" || registerDTO.UserType == "pharmacist" || registerDTO.UserType == "doctor" {
+		if !c.authService.IsDuplicateEmail(registerDTO.Email) {
+			response := helper.BuildErrorResponse("Failed to process request", "Duplicate email", helper.EmptyObj{})
+			ctx.JSON(http.StatusConflict, response)
+		} else {
 
+			createUser := c.authService.CreateUser(registerDTO)
+			token := c.jwtService.GenerateToken(strconv.FormatUint(createUser.ID, 10))
+			createUser.Token = token
+			response := helper.BuildResponse(true, "OK!", createUser)
+			external_api.CreateLocal()
+			external_api.Uploader()
+			ctx.JSON(http.StatusCreated, response)
+
+		}
+	} else {
+		response := helper.BuildErrorResponse("Failed to process", "User type not match", helper.EmptyObj{})
+		ctx.JSON(http.StatusBadRequest, response)
 	}
+
 }
