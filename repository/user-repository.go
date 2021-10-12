@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/suumiizxc/golang_api/entity"
-	"github.com/suumiizxc/golang_api/external_api"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -40,14 +39,6 @@ func (db *userConnection) InsertUser(user entity.User) entity.User {
 func (db *userConnection) UpdateUser(user entity.User) entity.User {
 	user.Password = hashAndSalt([]byte(user.Password))
 	user.UpdatedAt = time.Now()
-	external_api.CreateLocal(user.ProfileImage)
-	url, err := external_api.Uploader()
-	if err != nil {
-		log.Println(err)
-		panic("Failed to upload aws")
-	}
-
-	user.ProfileImage = url
 	db.connection.Save(&user)
 	return user
 }

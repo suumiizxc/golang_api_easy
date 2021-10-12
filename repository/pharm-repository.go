@@ -1,7 +1,11 @@
 package repository
 
 import (
+	"log"
+	"time"
+
 	"github.com/suumiizxc/golang_api/entity"
+	"github.com/suumiizxc/golang_api/external_api"
 	"gorm.io/gorm"
 )
 
@@ -22,6 +26,15 @@ func NewPharmRepository(db *gorm.DB) PharmRepository {
 }
 
 func (db *pharmConnection) InsertPharm(pharm entity.Pharm) entity.Pharm {
+	pharm.UpdatedAt = time.Now()
+	external_api.CreateLocal(pharm.Name)
+	url, err := external_api.Uploader()
+	if err != nil {
+		log.Println(err)
+		panic("Failed to upload aws")
+	}
+
+	pharm.Name = url
 	db.connection.Save(&pharm)
 	return pharm
 }

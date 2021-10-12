@@ -53,7 +53,6 @@ func main() {
 	pharmRoutes := r.Group("api/pharm")
 	{
 		pharmRoutes.POST("/", pharmController.Insert)
-		pharmRoutes.PUT("/", pharmController.Update)
 	}
 
 	r.Run()

@@ -10,7 +10,6 @@ import (
 )
 
 type PharmService interface {
-	Update(user dto.PharmUpdateDTO) entity.Pharm
 	Insert(user dto.PharmCreateDTO) entity.Pharm
 }
 
@@ -31,15 +30,5 @@ func (service *pharmService) Insert(b dto.PharmCreateDTO) entity.Pharm {
 		log.Fatalf("Failed map %v", err)
 	}
 	res := service.pharmRepository.InsertPharm(pharm)
-	return res
-}
-
-func (service *pharmService) Update(b dto.PharmUpdateDTO) entity.Pharm {
-	pharm := entity.Pharm{}
-	err := smapping.FillStruct(&pharm, smapping.MapFields(&b))
-	if err != nil {
-		log.Fatalf("Failed map %v", err)
-	}
-	res := service.pharmRepository.UpdatePharm(pharm)
 	return res
 }
