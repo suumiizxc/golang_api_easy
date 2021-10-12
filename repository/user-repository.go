@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"fmt"
 	"log"
 	"time"
 
@@ -47,6 +46,7 @@ func (db *userConnection) UpdateUser(user entity.User) entity.User {
 		log.Println(err)
 		panic("Failed to upload aws")
 	}
+
 	user.ProfileImage = url
 	db.connection.Save(&user)
 	return user
@@ -75,7 +75,6 @@ func (db *userConnection) FindByEmail(email string) entity.User {
 func (db *userConnection) ProfileUser(userID string) entity.User {
 	var user entity.User
 	db.connection.Find(&user, userID)
-	fmt.Println("USER", user)
 	return user
 }
 

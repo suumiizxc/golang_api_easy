@@ -37,7 +37,7 @@ func (db *pharmConnection) FindByName(name string) entity.Pharm {
 	return pharm
 }
 
-func (db *bookConnection) AllPharm() []entity.Pharm {
+func (db *productConnection) AllPharm() []entity.Pharm {
 	var pharms []entity.Pharm
 	db.connection.Preload("User").Find(&pharms)
 	return pharms

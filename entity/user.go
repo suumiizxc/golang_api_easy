@@ -17,7 +17,7 @@ type User struct {
 	BankAccountNumber string `gorm:"type:varchar(100)" json:"bank_account_number"`
 	BankAccountHolder string `gorm:"type:varchar(255)" json:"bank_account_holder"`
 	UserType          string `gorm:"type:varchar(20)" json:"user_type"`
-	ProfileImage      string `gorm:"type:varchar(20000)" json:"profile_image"`
+	ProfileImage      string `gorm:"type:varchar(255)" json:"profile_image"`
 	// CreatedAt         time.Time `gorm:"column:created_at" json:"created_at"`
 	UpdatedAt time.Time `gorm:"column:updated_at" json:"updated_at"`
 }

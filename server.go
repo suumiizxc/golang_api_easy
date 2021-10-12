@@ -11,21 +11,21 @@ import (
 )
 
 var (
-	db              *gorm.DB                   = config.SetupDatabaseConnection()
-	userRepository  repository.UserRepository  = repository.NewUserRepository(db)
-	bookRepository  repository.BookRepository  = repository.NewBookRepository(db)
-	pharmRepository repository.PharmRepository = repository.NewPharmRepository(db)
+	db                *gorm.DB                     = config.SetupDatabaseConnection()
+	userRepository    repository.UserRepository    = repository.NewUserRepository(db)
+	productRepository repository.ProductRepository = repository.NewProductRepository(db)
+	pharmRepository   repository.PharmRepository   = repository.NewPharmRepository(db)
 
-	jwtService   service.JWTService   = service.NewJWTService()
-	userService  service.UserService  = service.NewUserService(userRepository)
-	authService  service.AuthService  = service.NewAuthService(userRepository)
-	bookService  service.BookService  = service.NewBookService(bookRepository)
-	pharmService service.PharmService = service.NewPharmService(pharmRepository)
+	jwtService     service.JWTService     = service.NewJWTService()
+	userService    service.UserService    = service.NewUserService(userRepository)
+	authService    service.AuthService    = service.NewAuthService(userRepository)
+	productService service.ProductService = service.NewProductService(productRepository)
+	pharmService   service.PharmService   = service.NewPharmService(pharmRepository)
 
-	authController  controller.AuthController  = controller.NewAuthController(authService, jwtService)
-	userController  controller.UserController  = controller.NewUserController(userService, jwtService)
-	bookController  controller.BookController  = controller.NewBookController(bookService, jwtService)
-	pharmController controller.PharmController = controller.NewPharmController(pharmService)
+	authController    controller.AuthController    = controller.NewAuthController(authService, jwtService)
+	userController    controller.UserController    = controller.NewUserController(userService, jwtService)
+	productController controller.ProductController = controller.NewBookController(productService, jwtService)
+	pharmController   controller.PharmController   = controller.NewPharmController(pharmService)
 )
 
 func main() {
@@ -42,13 +42,13 @@ func main() {
 		userRoutes.GET("/profile", userController.Profile)
 		userRoutes.PUT("/update", userController.Update)
 	}
-	bookRoutes := r.Group("api/books", middleware.AuthorizeJWT(jwtService))
+	bookRoutes := r.Group("api/products", middleware.AuthorizeJWT(jwtService))
 	{
-		bookRoutes.GET("/", bookController.All)
-		bookRoutes.POST("/", bookController.Insert)
-		bookRoutes.GET("/:id", bookController.FindByID)
-		bookRoutes.PUT("/", bookController.Update)
-		bookRoutes.DELETE("/:id", bookController.Delete)
+		bookRoutes.GET("/", productController.All)
+		bookRoutes.POST("/", productController.Insert)
+		bookRoutes.GET("/:id", productController.FindByID)
+		bookRoutes.PUT("/", productController.Update)
+		bookRoutes.DELETE("/:id", productController.Delete)
 	}
 	pharmRoutes := r.Group("api/pharm")
 	{
