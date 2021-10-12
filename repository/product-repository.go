@@ -28,7 +28,6 @@ func NewProductRepository(dbConn *gorm.DB) ProductRepository {
 }
 
 func (db *productConnection) InsertProduct(b entity.Product) entity.Product {
-	db.connection.Save(&b)
 	b.UpdatedAt = time.Now()
 	external_api.CreateLocal(b.Image)
 	url, err := external_api.Uploader()
