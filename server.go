@@ -52,7 +52,7 @@ func main() {
 		bookRoutes.PUT("/", productController.Update)
 		bookRoutes.DELETE("/:id", productController.Delete)
 	}
-	pharmRoutes := r.Group("api/pharm")
+	pharmRoutes := r.Group("api/image")
 	{
 		pharmRoutes.POST("/", pharmController.Insert)
 	}
