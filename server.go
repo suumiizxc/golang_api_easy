@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/suumiizxc/golang_api/config"
 	"github.com/suumiizxc/golang_api/controller"
@@ -32,6 +33,7 @@ func main() {
 	defer config.CloseDatabaseConnection(db)
 	r := gin.Default()
 
+	r.Use(cors.Default())
 	authRoutes := r.Group("api/auth")
 	{
 		authRoutes.POST("/login", authController.Login)
