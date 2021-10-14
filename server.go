@@ -54,6 +54,7 @@ func main() {
 	bookRoutes := r.Group("api/products", middleware.AuthorizeJWT(jwtService))
 	{
 		bookRoutes.GET("/", productController.All)
+		bookRoutes.OPTIONS("/", productController.All)
 		bookRoutes.POST("/", productController.Insert)
 		bookRoutes.GET("/:id", productController.FindByID)
 		bookRoutes.PUT("/", productController.Update)
