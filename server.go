@@ -65,7 +65,7 @@ func main() {
 		userRoutes.GET("/profile", userController.Profile)
 		userRoutes.PUT("/update", userController.Update)
 	}
-	bookRoutes := r.Group("api/products")
+	bookRoutes := r.Group("api/products", middleware.AuthorizeJWT(jwtService))
 	{
 		bookRoutes.GET("/", productController.All)
 		bookRoutes.POST("/", productController.Insert)
