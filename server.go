@@ -16,6 +16,7 @@ var (
 	userRepository    repository.UserRepository    = repository.NewUserRepository(db)
 	productRepository repository.ProductRepository = repository.NewProductRepository(db)
 	pharmRepository   repository.PharmRepository   = repository.NewPharmRepository(db)
+	doctorRepository  repository.DoctorRepository  = repository.NewDoctorRepository(db)
 
 	jwtService     service.JWTService     = service.NewJWTService()
 	userService    service.UserService    = service.NewUserService(userRepository)
@@ -23,17 +24,22 @@ var (
 	productService service.ProductService = service.NewProductService(productRepository)
 	pharmService   service.PharmService   = service.NewPharmService(pharmRepository)
 
-	authController    controller.AuthController    = controller.NewAuthController(authService, jwtService)
-	userController    controller.UserController    = controller.NewUserController(userService, jwtService)
-	productController controller.ProductController = controller.NewBookController(productService, jwtService)
-	pharmController   controller.PharmController   = controller.NewPharmController(pharmService)
+	authDoctorService service.AuthDoctorService = service.NewAuthDoctorService(doctorRepository)
+	doctorService     service.DoctorService     = service.NewDoctorService(doctorRepository)
+
+	authController       controller.AuthController       = controller.NewAuthController(authService, jwtService)
+	userController       controller.UserController       = controller.NewUserController(userService, jwtService)
+	productController    controller.ProductController    = controller.NewBookController(productService, jwtService)
+	pharmController      controller.PharmController      = controller.NewPharmController(pharmService)
+	authDoctorController controller.AuthDoctorController = controller.NewAuthDoctorController(authDoctorService, jwtService)
+	doctorController     controller.DoctorController     = controller.NewDoctorController(doctorService, jwtService)
 )
 
 func main() {
 	defer config.CloseDatabaseConnection(db)
 	r := gin.Default()
 	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://178.128.83.147:8080"}
+	// config.AllowOrigins = []string{"http://178.128.83.147:8080"}
 	r.Use(cors.New(config))
 	authRoutes := r.Group("api/auth")
 	{
@@ -56,6 +62,16 @@ func main() {
 	pharmRoutes := r.Group("api/image")
 	{
 		pharmRoutes.POST("/", pharmController.Insert)
+	}
+	doctorAuthRoutes := r.Group("api/doctor/auth")
+	{
+		doctorAuthRoutes.POST("/login", authDoctorController.LoginDoctor)
+		doctorAuthRoutes.POST("/register", authDoctorController.RegisterDoctor)
+	}
+	doctorRoutes := r.Group("api/doctor")
+	{
+		doctorRoutes.GET("/profile", doctorController.ProfileDoctor)
+		doctorRoutes.PUT("/update", doctorController.UpdateDoctor)
 	}
 
 	r.Run()

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -37,6 +38,7 @@ func (c *authController) Login(ctx *gin.Context) {
 		return
 	}
 	authResult := c.authService.VerifyCredential(loginDTO.Email, loginDTO.Password)
+	fmt.Println("AuthResult :", authResult)
 	if v, ok := authResult.(entity.User); ok {
 		generateToken := c.jwtService.GenerateToken(strconv.FormatUint(v.ID, 10))
 		v.Token = generateToken
