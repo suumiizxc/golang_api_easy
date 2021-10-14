@@ -38,9 +38,9 @@ var (
 func main() {
 	defer config.CloseDatabaseConnection(db)
 	r := gin.Default()
-	config := cors.DefaultConfig()
+	// config := cors.DefaultConfig()
 	// config.AllowOrigins = []string{"http://178.128.83.147:8080"}
-	r.Use(cors.New(config))
+	r.Use(cors.Default())
 	authRoutes := r.Group("api/auth")
 	{
 		authRoutes.POST("/login", authController.Login)
