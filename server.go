@@ -11,27 +11,31 @@ import (
 )
 
 var (
-	db                *gorm.DB                     = config.SetupDatabaseConnection()
-	userRepository    repository.UserRepository    = repository.NewUserRepository(db)
-	productRepository repository.ProductRepository = repository.NewProductRepository(db)
-	pharmRepository   repository.PharmRepository   = repository.NewPharmRepository(db)
-	doctorRepository  repository.DoctorRepository  = repository.NewDoctorRepository(db)
+	db                   *gorm.DB                        = config.SetupDatabaseConnection()
+	userRepository       repository.UserRepository       = repository.NewUserRepository(db)
+	productRepository    repository.ProductRepository    = repository.NewProductRepository(db)
+	pharmRepository      repository.PharmRepository      = repository.NewPharmRepository(db)
+	doctorRepository     repository.DoctorRepository     = repository.NewDoctorRepository(db)
+	pharmacistRepository repository.PharmacistRepository = repository.NewPharmacistRepository(db)
 
-	jwtService     service.JWTService     = service.NewJWTService()
-	userService    service.UserService    = service.NewUserService(userRepository)
-	authService    service.AuthService    = service.NewAuthService(userRepository)
-	productService service.ProductService = service.NewProductService(productRepository)
-	pharmService   service.PharmService   = service.NewPharmService(pharmRepository)
+	jwtService            service.JWTService            = service.NewJWTService()
+	userService           service.UserService           = service.NewUserService(userRepository)
+	authService           service.AuthService           = service.NewAuthService(userRepository)
+	productService        service.ProductService        = service.NewProductService(productRepository)
+	pharmService          service.PharmService          = service.NewPharmService(pharmRepository)
+	doctorService         service.DoctorService         = service.NewDoctorService(doctorRepository)
+	authDoctorService     service.AuthDoctorService     = service.NewAuthDoctorService(doctorRepository)
+	pharmacistService     service.PharmacistService     = service.NewPharmacistService(pharmacistRepository)
+	authPharmacistService service.AuthPharmacistService = service.NewAuthPharmacistService(pharmacistRepository)
 
-	authDoctorService service.AuthDoctorService = service.NewAuthDoctorService(doctorRepository)
-	doctorService     service.DoctorService     = service.NewDoctorService(doctorRepository)
-
-	authController       controller.AuthController       = controller.NewAuthController(authService, jwtService)
-	userController       controller.UserController       = controller.NewUserController(userService, jwtService)
-	productController    controller.ProductController    = controller.NewBookController(productService, jwtService)
-	pharmController      controller.PharmController      = controller.NewPharmController(pharmService)
-	authDoctorController controller.AuthDoctorController = controller.NewAuthDoctorController(authDoctorService, jwtService)
-	doctorController     controller.DoctorController     = controller.NewDoctorController(doctorService, jwtService)
+	authController           controller.AuthController           = controller.NewAuthController(authService, jwtService)
+	userController           controller.UserController           = controller.NewUserController(userService, jwtService)
+	productController        controller.ProductController        = controller.NewBookController(productService, jwtService)
+	pharmController          controller.PharmController          = controller.NewPharmController(pharmService)
+	authDoctorController     controller.AuthDoctorController     = controller.NewAuthDoctorController(authDoctorService, jwtService)
+	doctorController         controller.DoctorController         = controller.NewDoctorController(doctorService, jwtService)
+	authPharmacistController controller.AuthPharmacistController = controller.NewAuthPharmacistController(authPharmacistService, jwtService)
+	pharmacistController     controller.PharmacistController     = controller.NewPharmacistController(pharmacistService, jwtService)
 )
 
 func CORSMiddleware() gin.HandlerFunc {
@@ -86,6 +90,16 @@ func main() {
 	{
 		doctorRoutes.GET("/profile", doctorController.ProfileDoctor)
 		doctorRoutes.PUT("/update", doctorController.UpdateDoctor)
+	}
+	pharmacistAuthRoutes := r.Group("api/pharmacist/auth")
+	{
+		pharmacistAuthRoutes.POST("/login", authPharmacistController.LoginPharmacist)
+		pharmacistAuthRoutes.POST("/register", authPharmacistController.RegisterPharmacist)
+	}
+	pharmacistRoutes := r.Group("api/pharmacist")
+	{
+		pharmacistRoutes.GET("/profile", pharmacistController.ProfilePharmacist)
+		pharmacistRoutes.PUT("/update", pharmacistController.UpdatePharmacist)
 	}
 
 	r.Run()

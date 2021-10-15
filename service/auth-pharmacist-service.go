@@ -28,7 +28,7 @@ func NewAuthPharmacistService(pharmacistRepo repository.PharmacistRepository) Au
 
 func (service *authPharmacistService) VerifyCredentialPharmacist(email string, password string) interface{} {
 	res := service.pharmacistRepository.VerifyCredentialPharmacist(email, password)
-	if v, ok := res.(entity.Doctor); ok {
+	if v, ok := res.(entity.Pharmacist); ok {
 		comparedPassword := comparePassword(v.Password, []byte(password))
 		if v.Email == email && comparedPassword {
 			return res
