@@ -59,7 +59,7 @@ func main() {
 	defer config.CloseDatabaseConnection(db)
 	r := gin.Default()
 	r.Use(CORSMiddleware())
-	authRoutes := r.Group("api/auth")
+	authRoutes := r.Group("api/admin/auth")
 	{
 		authRoutes.POST("/login", authController.Login)
 		authRoutes.POST("/register", authController.Register)
