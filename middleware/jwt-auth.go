@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -23,7 +24,7 @@ func AuthorizeJWT(jwtService service.JWTService) gin.HandlerFunc {
 		token, err := jwtService.ValidateToken(authHeader)
 		if err != nil {
 
-			log.Println(err)
+			fmt.Println("pisdaa", err)
 			response := helper.BuildErrorResponse("Token is not valid", err.Error(), nil)
 			c.AbortWithStatusJSON(http.StatusUnauthorized, response)
 		} else {

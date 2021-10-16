@@ -65,12 +65,20 @@ func (c *doctorController) ProfileDoctor(context *gin.Context) {
 	token, err := c.jwtService.ValidateToken(authHeader)
 
 	if err != nil {
+		fmt.Println("error validate token")
 		panic(err.Error())
 	}
 	claims := token.Claims.(jwt.MapClaims)
 	fmt.Println(claims)
 	id := fmt.Sprintf("%v", claims["user_id"])
-	user := c.doctorService.ProfileDoctor(id)
-	res := helper.BuildResponse(true, "OK!", user)
-	context.JSON(http.StatusOK, res)
+	user_type := fmt.Sprintf("%v", claims["user_type"])
+	if user_type == "doctor" {
+		user := c.doctorService.ProfileDoctor(id)
+		res := helper.BuildResponse(true, "OK!", user)
+		context.JSON(http.StatusOK, res)
+	} else {
+		res := helper.BuildErrorResponse("Permission denied", "Permission denied", helper.EmptyObj{})
+		context.JSON(http.StatusBadRequest, res)
+	}
+
 }

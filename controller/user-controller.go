@@ -70,7 +70,14 @@ func (c *userController) Profile(context *gin.Context) {
 	claims := token.Claims.(jwt.MapClaims)
 	fmt.Println(claims)
 	id := fmt.Sprintf("%v", claims["user_id"])
-	user := c.userService.Profile(id)
-	res := helper.BuildResponse(true, "OK!", user)
-	context.JSON(http.StatusOK, res)
+	user_type := fmt.Sprintf("%v", claims["user_type"])
+	if user_type == "admin" {
+		user := c.userService.Profile(id)
+		res := helper.BuildResponse(true, "OK!", user)
+		context.JSON(http.StatusOK, res)
+	} else {
+		res := helper.BuildErrorResponse("Permission denied", "Permission denied", helper.EmptyObj{})
+		context.JSON(http.StatusBadRequest, res)
+	}
+
 }
