@@ -69,14 +69,20 @@ func (c *productController) Insert(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, res)
 	} else {
 		authHeader := context.GetHeader("Authorization")
-		userID := c.getUserIDByToken(authHeader)
+		userID, userType := c.getUserIdUserTypeByToken(authHeader)
 		convertedUserID, err := strconv.ParseUint(userID, 10, 64)
 		if err == nil {
 			productCreateDTO.UserID = convertedUserID
 		}
-		result := c.productService.Insert(productCreateDTO)
-		response := helper.BuildResponse(true, "OK", result)
-		context.JSON(http.StatusCreated, response)
+		if userType == "admin" {
+			result := c.productService.Insert(productCreateDTO)
+			response := helper.BuildResponse(true, "OK", result)
+			context.JSON(http.StatusCreated, response)
+		} else {
+			response := helper.BuildErrorResponse("Permission denied", "Permission denied", helper.EmptyObj{})
+			context.JSON(http.StatusBadRequest, response)
+		}
+
 	}
 }
 
@@ -96,18 +102,25 @@ func (c *productController) Update(context *gin.Context) {
 	}
 	claims := token.Claims.(jwt.MapClaims)
 	userID := fmt.Sprintf("%v", claims["user_id"])
-	if c.productService.IsAllowedToEdit(userID, productUpdateDTO.ID) {
-		id, errID := strconv.ParseUint(userID, 10, 64)
-		if errID == nil {
-			productUpdateDTO.UserID = id
+	userType := fmt.Sprintf("%v", claims["user_type"])
+	if userType == "admin" {
+		if c.productService.IsAllowedToEdit(userID, productUpdateDTO.ID) {
+			id, errID := strconv.ParseUint(userID, 10, 64)
+			if errID == nil {
+				productUpdateDTO.UserID = id
+			}
+			result := c.productService.Update(productUpdateDTO)
+			response := helper.BuildResponse(true, "OK", result)
+			context.JSON(http.StatusOK, response)
+		} else {
+			response := helper.BuildErrorResponse("You dont have permission", "You are not the owner", helper.EmptyObj{})
+			context.JSON(http.StatusForbidden, response)
 		}
-		result := c.productService.Update(productUpdateDTO)
-		response := helper.BuildResponse(true, "OK", result)
-		context.JSON(http.StatusOK, response)
 	} else {
-		response := helper.BuildErrorResponse("You dont have permission", "You are not the owner", helper.EmptyObj{})
-		context.JSON(http.StatusForbidden, response)
+		response := helper.BuildErrorResponse("Permission denied", "Permission denied", helper.EmptyObj{})
+		context.JSON(http.StatusBadRequest, response)
 	}
+
 }
 
 func (c *productController) Delete(context *gin.Context) {
@@ -125,14 +138,21 @@ func (c *productController) Delete(context *gin.Context) {
 	}
 	claims := token.Claims.(jwt.MapClaims)
 	userID := fmt.Sprintf("%v", claims["user_id"])
-	if c.productService.IsAllowedToEdit(userID, product.ID) {
-		c.productService.Delete(product)
-		res := helper.BuildResponse(true, "Deleted", helper.EmptyObj{})
-		context.JSON(http.StatusOK, res)
+	userType := fmt.Sprintf("%v", claims["user_type"])
+	if userType == "admin" {
+		if c.productService.IsAllowedToEdit(userID, product.ID) {
+			c.productService.Delete(product)
+			res := helper.BuildResponse(true, "Deleted", helper.EmptyObj{})
+			context.JSON(http.StatusOK, res)
+		} else {
+			response := helper.BuildErrorResponse("You dont have permission", "You are not the owner", helper.EmptyObj{})
+			context.JSON(http.StatusForbidden, response)
+		}
 	} else {
-		response := helper.BuildErrorResponse("You dont have permission", "You are not the owner", helper.EmptyObj{})
-		context.JSON(http.StatusForbidden, response)
+		response := helper.BuildErrorResponse("Permission denied", "Permission denied", helper.EmptyObj{})
+		context.JSON(http.StatusBadRequest, response)
 	}
+
 }
 
 func (c *productController) getUserIDByToken(token string) string {
@@ -143,4 +163,15 @@ func (c *productController) getUserIDByToken(token string) string {
 	claims := aToken.Claims.(jwt.MapClaims)
 	id := fmt.Sprintf("%v", claims["user_id"])
 	return id
+}
+
+func (c *productController) getUserIdUserTypeByToken(token string) (string, string) {
+	aToken, err := c.jwtService.ValidateToken(token)
+	if err != nil {
+		panic(err.Error())
+	}
+	claims := aToken.Claims.(jwt.MapClaims)
+	id := fmt.Sprintf("%v", claims["user_id"])
+	user_type := fmt.Sprintf("%v", claims["user_type"])
+	return id, user_type
 }
