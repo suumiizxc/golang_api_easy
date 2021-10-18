@@ -42,7 +42,7 @@ func (c *pharmacistController) UpdatePharmacist(context *gin.Context) {
 	token, errToken := c.jwtService.ValidateToken(authHeader)
 
 	if errToken != nil {
-		panic(errToken.Error())
+		panic(errToken.Error()) //response token expired or token failed
 	}
 
 	claims := token.Claims.(jwt.MapClaims)
