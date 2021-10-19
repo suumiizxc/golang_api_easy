@@ -64,7 +64,7 @@ func main() {
 		authRoutes.POST("/login", authController.Login)
 		authRoutes.POST("/register", authController.Register)
 	}
-	userRoutes := r.Group("api/user", middleware.AuthorizeJWT(jwtService))
+	userRoutes := r.Group("api/admin", middleware.AuthorizeJWT(jwtService))
 	{
 		userRoutes.GET("/profile", userController.Profile)
 		userRoutes.PUT("/update", userController.Update)
