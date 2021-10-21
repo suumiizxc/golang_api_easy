@@ -155,16 +155,6 @@ func (c *productController) Delete(context *gin.Context) {
 
 }
 
-func (c *productController) getUserIDByToken(token string) string {
-	aToken, err := c.jwtService.ValidateToken(token)
-	if err != nil {
-		panic(err.Error())
-	}
-	claims := aToken.Claims.(jwt.MapClaims)
-	id := fmt.Sprintf("%v", claims["user_id"])
-	return id
-}
-
 func (c *productController) getUserIdUserTypeByToken(token string) (string, string) {
 	aToken, err := c.jwtService.ValidateToken(token)
 	if err != nil {

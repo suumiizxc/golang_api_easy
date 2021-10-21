@@ -3,12 +3,11 @@ package entity
 import "time"
 
 type Doctor struct {
-	ID       uint64 `gorm:"primary_key:auto_increment" json:"id"`
-	Name     string `gorm:"type:varchar(255)" json:"name"`
-	Email    string `gorm:"uniqueIndex;type:varchar(255)" json:"email"`
-	Password string `gorm:"->;<-;not null" json:"-"`
-	Token    string `gorm:"-" json:"token,omitempty"`
-
+	ID                uint64 `gorm:"primary_key:auto_increment" json:"id"`
+	Name              string `gorm:"type:varchar(255)" json:"name"`
+	Email             string `gorm:"uniqueIndex;type:varchar(255)" json:"email"`
+	Password          string `gorm:"->;<-;not null" json:"-"`
+	Token             string `gorm:"-" json:"token,omitempty"`
 	Registration      string `gorm:"type:varchar(100)" json:"registration"`
 	PhoneNumber       string `gorm:"type:varchar(20)" json:"phone_number"`
 	FirstName         string `gorm:"type:varchar(255)" json:"first_name"`
@@ -17,6 +16,7 @@ type Doctor struct {
 	BankAccountNumber string `gorm:"type:varchar(100)" json:"bank_account_number"`
 	BankAccountHolder string `gorm:"type:varchar(255)" json:"bank_account_holder"`
 	ProfileImage      string `gorm:"type:varchar(255)" json:"profile_image"`
+	Type              string `gorm:"type:varchar(20)" json:"type"`
 	// CreatedAt         time.Time `gorm:"column:created_at" json:"created_at"`
 	UpdatedAt time.Time `gorm:"column:updated_at" json:"updated_at"`
 }

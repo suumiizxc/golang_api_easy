@@ -38,7 +38,7 @@ var (
 	doctorController         controller.DoctorController         = controller.NewDoctorController(doctorService, jwtService)
 	authPharmacistController controller.AuthPharmacistController = controller.NewAuthPharmacistController(authPharmacistService, jwtService)
 	pharmacistController     controller.PharmacistController     = controller.NewPharmacistController(pharmacistService, jwtService)
-	orderController          controller.OrderController          = controller.NewOrderController(orderService)
+	orderController          controller.OrderController          = controller.NewOrderController(orderService, jwtService)
 )
 
 func CORSMiddleware() gin.HandlerFunc {
@@ -105,7 +105,7 @@ func main() {
 		pharmacistRoutes.PUT("/update", pharmacistController.UpdatePharmacist)
 	}
 
-	orderRoutes := r.Group("api/order")
+	orderRoutes := r.Group("api/order", middleware.AuthorizeJWT(jwtService))
 	{
 		orderRoutes.POST("/", orderController.Insert)
 	}

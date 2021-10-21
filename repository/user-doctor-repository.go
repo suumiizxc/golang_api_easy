@@ -28,7 +28,7 @@ func NewDoctorRepository(db *gorm.DB) DoctorRepository {
 
 func (db *doctorConnection) InsertDoctor(user entity.Doctor) entity.Doctor {
 	user.Password = hashAndSalt([]byte(user.Password))
-
+	user.Type = "doctor"
 	user.UpdatedAt = time.Now()
 	db.connection.Save(&user)
 	return user

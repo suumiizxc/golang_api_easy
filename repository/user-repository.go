@@ -30,7 +30,7 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 
 func (db *userConnection) InsertUser(user entity.User) entity.User {
 	user.Password = hashAndSalt([]byte(user.Password))
-
+	user.Type = "admin"
 	user.UpdatedAt = time.Now()
 	db.connection.Save(&user)
 	return user

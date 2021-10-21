@@ -28,7 +28,7 @@ func NewPharmacistRepository(db *gorm.DB) PharmacistRepository {
 
 func (db *pharmacistConnection) InsertPharmacist(user entity.Pharmacist) entity.Pharmacist {
 	user.Password = hashAndSalt([]byte(user.Password))
-
+	user.Type = "pharmacist"
 	user.UpdatedAt = time.Now()
 	db.connection.Save(&user)
 	return user
