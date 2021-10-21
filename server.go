@@ -17,6 +17,7 @@ var (
 	pharmRepository      repository.PharmRepository      = repository.NewPharmRepository(db)
 	doctorRepository     repository.DoctorRepository     = repository.NewDoctorRepository(db)
 	pharmacistRepository repository.PharmacistRepository = repository.NewPharmacistRepository(db)
+	orderRepository      repository.OrderRepository      = repository.NewOrderRepository(db)
 
 	jwtService            service.JWTService            = service.NewJWTService()
 	userService           service.UserService           = service.NewUserService(userRepository)
@@ -27,6 +28,7 @@ var (
 	authDoctorService     service.AuthDoctorService     = service.NewAuthDoctorService(doctorRepository)
 	pharmacistService     service.PharmacistService     = service.NewPharmacistService(pharmacistRepository)
 	authPharmacistService service.AuthPharmacistService = service.NewAuthPharmacistService(pharmacistRepository)
+	orderService          service.OrderService          = service.NewOrderService(orderRepository)
 
 	authController           controller.AuthController           = controller.NewAuthController(authService, jwtService)
 	userController           controller.UserController           = controller.NewUserController(userService, jwtService)
@@ -36,6 +38,7 @@ var (
 	doctorController         controller.DoctorController         = controller.NewDoctorController(doctorService, jwtService)
 	authPharmacistController controller.AuthPharmacistController = controller.NewAuthPharmacistController(authPharmacistService, jwtService)
 	pharmacistController     controller.PharmacistController     = controller.NewPharmacistController(pharmacistService, jwtService)
+	orderController          controller.OrderController          = controller.NewOrderController(orderService)
 )
 
 func CORSMiddleware() gin.HandlerFunc {
@@ -102,5 +105,9 @@ func main() {
 		pharmacistRoutes.PUT("/update", pharmacistController.UpdatePharmacist)
 	}
 
+	orderRoutes := r.Group("api/order")
+	{
+		orderRoutes.POST("/", orderController.Insert)
+	}
 	r.Run()
 }
