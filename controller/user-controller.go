@@ -79,5 +79,4 @@ func (c *userController) Profile(context *gin.Context) {
 		res := helper.BuildErrorResponse("Permission denied", "Permission denied", helper.EmptyObj{})
 		context.JSON(http.StatusBadRequest, res)
 	}
-
 }

@@ -66,6 +66,7 @@ func main() {
 	{
 		authRoutes.POST("/login", authController.Login)
 		authRoutes.POST("/register", authController.Register)
+		authRoutes.POST("/checktoken", authController.CheckToken)
 	}
 	userRoutes := r.Group("api/admin", middleware.AuthorizeJWT(jwtService))
 	{

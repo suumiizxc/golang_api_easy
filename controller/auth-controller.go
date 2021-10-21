@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/suumiizxc/golang_api/dto"
 	"github.com/suumiizxc/golang_api/entity"
@@ -15,6 +16,7 @@ import (
 type AuthController interface {
 	Login(ctx *gin.Context)
 	Register(ctx *gin.Context)
+	CheckToken(ctx *gin.Context)
 }
 
 type authController struct {
@@ -72,4 +74,34 @@ func (c *authController) Register(ctx *gin.Context) {
 
 	}
 
+}
+
+func (c *authController) CheckToken(context *gin.Context) {
+	var checkTokenDTO dto.CheckTokenDTO
+	errDTO := context.ShouldBind(&checkTokenDTO)
+	if errDTO != nil {
+		res := helper.BuildErrorResponse("Failed to process request", errDTO.Error(), helper.EmptyObj{})
+		context.AbortWithStatusJSON(http.StatusBadRequest, res)
+		return
+	}
+
+	token, err := c.jwtService.ValidateToken(checkTokenDTO.Token)
+	if err != nil {
+		panic(err.Error())
+	}
+	claims := token.Claims.(jwt.MapClaims)
+	user_type := fmt.Sprintf("%v", claims["user_type"])
+	if user_type == "admin" {
+		res := helper.BuildResponse(true, "admin", helper.EmptyObj{})
+		context.JSON(http.StatusOK, res)
+	} else if user_type == "doctor" {
+		res := helper.BuildResponse(true, "doctor", helper.EmptyObj{})
+		context.JSON(http.StatusOK, res)
+	} else if user_type == "pharmacist" {
+		res := helper.BuildResponse(true, "pharmacist", helper.EmptyObj{})
+		context.JSON(http.StatusOK, res)
+	} else {
+		res := helper.BuildErrorResponse("Not found user type in token", "Not found user type in token", helper.EmptyObj{})
+		context.JSON(http.StatusBadRequest, res)
+	}
 }
