@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"log"
 
 	"github.com/mashingan/smapping"
@@ -9,7 +10,7 @@ import (
 )
 
 type OrderService interface {
-	Insert(b entity.Order) entity.Order
+	Insert(b entity.Order, tokenID uint64) (entity.Order, error)
 }
 
 type orderService struct {
@@ -22,13 +23,18 @@ func NewOrderService(orderRepo repository.OrderRepository) OrderService {
 	}
 }
 
-func (service *orderService) Insert(b entity.Order) entity.Order {
+func (service *orderService) Insert(b entity.Order, tokenID uint64) (entity.Order, error) {
 	order := entity.Order{}
 	// product := entity.Product{}
 	err := smapping.FillStruct(&order, smapping.MapFields(&b))
-	if err != nil {
-		log.Fatalf("Failed map %v", err)
+	if order.PharmacistID == tokenID {
+		if err != nil {
+			log.Fatalf("Failed map %v", err)
+		}
+		res := service.orderRepository.InsertOrder(order)
+		return res, nil
+	} else {
+		return order, errors.New("empty name")
 	}
-	res := service.orderRepository.InsertOrder(order)
-	return res
+
 }

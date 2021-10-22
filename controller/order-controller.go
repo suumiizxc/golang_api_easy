@@ -44,9 +44,10 @@ func (c *orderController) Insert(context *gin.Context) {
 	if err != nil {
 		panic(err.Error())
 	}
+	fmt.Println("orderDTO : ", orderCreateDTO)
 	userType := fmt.Sprintf("%v", claims["user_type"])
-
-	if userType == "doctor" {
+	// pharmacist id validate
+	if userType == "pharmacist" {
 		errDTO := context.ShouldBindJSON(&orderCreateDTO)
 		if errDTO != nil {
 			res := helper.BuildErrorResponse("Failed to process request", errDTO.Error(), helper.EmptyObj{})
@@ -54,10 +55,14 @@ func (c *orderController) Insert(context *gin.Context) {
 
 		} else {
 
-			result := c.orderService.Insert(orderCreateDTO)
-
-			response := helper.BuildResponse(true, "OK", result)
-			context.JSON(http.StatusCreated, response)
+			result, err := c.orderService.Insert(orderCreateDTO, id)
+			if err == nil {
+				response := helper.BuildResponse(true, "OK", result)
+				context.JSON(http.StatusCreated, response)
+			} else {
+				response := helper.BuildErrorResponse("Permission denied", "Pharmacist id did not match", err.Error())
+				context.JSON(http.StatusBadRequest, response)
+			}
 
 		}
 	} else {
