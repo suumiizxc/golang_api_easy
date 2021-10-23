@@ -16,6 +16,8 @@ type UserRepository interface {
 	IsDuplicateEmail(email string) (tx *gorm.DB)
 	FindByEmail(email string) entity.User
 	ProfileUser(userID string) entity.User
+	AllDoctors() []entity.Doctor
+	AllPharmacist() []entity.Pharmacist
 }
 
 type userConnection struct {
@@ -79,4 +81,16 @@ func hashAndSalt(pwd []byte) string {
 		panic("Failed to hash a password")
 	}
 	return string(hash)
+}
+
+func (db *userConnection) AllDoctors() []entity.Doctor {
+	var doctors []entity.Doctor
+	db.connection.Preload("User").Find(&doctors)
+	return doctors
+}
+
+func (db *userConnection) AllPharmacist() []entity.Pharmacist {
+	var pharmacists []entity.Pharmacist
+	db.connection.Preload("User").Find(&pharmacists)
+	return pharmacists
 }

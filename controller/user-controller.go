@@ -8,6 +8,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/suumiizxc/golang_api/dto"
+	"github.com/suumiizxc/golang_api/entity"
 	"github.com/suumiizxc/golang_api/helper"
 	"github.com/suumiizxc/golang_api/service"
 )
@@ -15,6 +16,8 @@ import (
 type UserController interface {
 	Update(context *gin.Context)
 	Profile(context *gin.Context)
+	AllDoctors(context *gin.Context)
+	AllPharmacist(context *gin.Context)
 }
 
 type userController struct {
@@ -79,4 +82,19 @@ func (c *userController) Profile(context *gin.Context) {
 		res := helper.BuildErrorResponse("Permission denied", "Permission denied", helper.EmptyObj{})
 		context.JSON(http.StatusBadRequest, res)
 	}
+}
+
+func (c *userController) AllDoctors(context *gin.Context) {
+
+	var doctors []entity.Doctor = c.userService.AllDoctors()
+	res := helper.BuildResponseWithCount(true, "OK", doctors, len(doctors))
+	fmt.Println("Doctors count", len(doctors))
+	context.JSON(http.StatusOK, res)
+}
+
+func (c *userController) AllPharmacist(context *gin.Context) {
+	var pharmacists []entity.Pharmacist = c.userService.AllPharmacist()
+	res := helper.BuildResponseWithCount(true, "OK", pharmacists, len(pharmacists))
+	fmt.Println("Pharmacist count", len(pharmacists))
+	context.JSON(http.StatusOK, res)
 }

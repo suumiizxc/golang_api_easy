@@ -12,6 +12,8 @@ import (
 type UserService interface {
 	Update(user dto.UserUpdateDTO) entity.User
 	Profile(userID string) entity.User
+	AllDoctors() []entity.Doctor
+	AllPharmacist() []entity.Pharmacist
 }
 
 type userService struct {
@@ -36,4 +38,12 @@ func (service *userService) Update(user dto.UserUpdateDTO) entity.User {
 
 func (service *userService) Profile(userID string) entity.User {
 	return service.userRepository.ProfileUser(userID)
+}
+
+func (service *userService) AllDoctors() []entity.Doctor {
+	return service.userRepository.AllDoctors()
+}
+
+func (service *userService) AllPharmacist() []entity.Pharmacist {
+	return service.userRepository.AllPharmacist()
 }

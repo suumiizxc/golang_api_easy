@@ -72,6 +72,8 @@ func main() {
 	{
 		userRoutes.GET("/profile", userController.Profile)
 		userRoutes.PUT("/update", userController.Update)
+		userRoutes.GET("/alldoctors", userController.AllDoctors)
+		userRoutes.GET("/allpharmacists", userController.AllPharmacist)
 	}
 	bookRoutes := r.Group("api/products", middleware.AuthorizeJWT(jwtService))
 	{
