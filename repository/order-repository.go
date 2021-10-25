@@ -40,13 +40,13 @@ func (db *orderConnection) AllOrder() []entity.Order {
 
 func (db *orderConnection) FindByPharmacistOrder(pharmacistID uint64) []entity.Order {
 	var orders []entity.Order
-	db.connection.Model(&entity.Order{}).Where("pharmacist_id = ?", pharmacistID).Find(&orders)
+	db.connection.Preload("Pharmacist").Preload("Doctor").Where("pharmacist_id = ?", pharmacistID).Find(&orders)
 	return orders
 }
 
 func (db *orderConnection) FindByDoctorOrder(doctorID uint64) []entity.Order {
 	var orders []entity.Order
-	db.connection.Model(&entity.Order{}).Where("doctor_id = ?", doctorID).Find(&orders)
+	db.connection.Preload("Pharmacist").Preload("Doctor").Where("doctor_id = ?", doctorID).Find(&orders)
 	return orders
 }
 
@@ -90,5 +90,6 @@ func (db *orderConnection) InsertOrder(b entity.Order) entity.Order {
 	db.connection.Model(&pharmacistC).Where("id = ?", b.PharmacistID).Update("balance", (pharmacist_coupon + pharmacistS.Balance))
 
 	db.connection.Save(&b)
+	db.connection.Preload("Pharmacist").Preload("Doctor").Find(&b)
 	return b
 }
