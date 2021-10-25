@@ -13,6 +13,8 @@ import (
 type OrderRepository interface {
 	InsertOrder(b entity.Order) entity.Order
 	AllOrder() []entity.Order
+	FindByPharmacistOrder(pharmacistID uint64) []entity.Order
+	FindByDoctorOrder(doctorID uint64) []entity.Order
 }
 
 type orderConnection struct {
@@ -33,6 +35,18 @@ type Bird struct {
 func (db *orderConnection) AllOrder() []entity.Order {
 	var orders []entity.Order
 	db.connection.Preload("Orders").Find(&orders)
+	return orders
+}
+
+func (db *orderConnection) FindByPharmacistOrder(pharmacistID uint64) []entity.Order {
+	var orders []entity.Order
+	db.connection.Model(&entity.Order{}).Where("pharmacist_id = ?", pharmacistID).Find(&orders)
+	return orders
+}
+
+func (db *orderConnection) FindByDoctorOrder(doctorID uint64) []entity.Order {
+	var orders []entity.Order
+	db.connection.Model(&entity.Order{}).Where("doctor_id = ?", doctorID).Find(&orders)
 	return orders
 }
 

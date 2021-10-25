@@ -12,6 +12,8 @@ import (
 type OrderService interface {
 	Insert(b entity.Order, tokenID uint64) (entity.Order, error)
 	All() []entity.Order
+	FindPharmacist(pharmacistID uint64) []entity.Order
+	FindDoctor(doctorID uint64) []entity.Order
 }
 
 type orderService struct {
@@ -42,4 +44,12 @@ func (service *orderService) Insert(b entity.Order, tokenID uint64) (entity.Orde
 
 func (service *orderService) All() []entity.Order {
 	return service.orderRepository.AllOrder()
+}
+
+func (service *orderService) FindPharmacist(pharmacistID uint64) []entity.Order {
+	return service.orderRepository.FindByPharmacistOrder(pharmacistID)
+}
+
+func (service *orderService) FindDoctor(doctorID uint64) []entity.Order {
+	return service.orderRepository.FindByDoctorOrder(doctorID)
 }

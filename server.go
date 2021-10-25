@@ -116,6 +116,9 @@ func main() {
 	{
 		orderRoutes.POST("/", orderController.Insert)
 		orderRoutes.GET("/", orderController.All)
+		orderRoutes.GET("/doctor", orderController.FindDoctor)
+		orderRoutes.GET("/pharmacist", orderController.FindPharmacist)
 	}
+
 	r.Run()
 }

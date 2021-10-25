@@ -15,6 +15,8 @@ import (
 type OrderController interface {
 	Insert(context *gin.Context)
 	All(context *gin.Context)
+	FindPharmacist(context *gin.Context)
+	FindDoctor(context *gin.Context)
 }
 
 type orderController struct {
@@ -28,6 +30,79 @@ func NewOrderController(orderServ service.OrderService, jwtServ service.JWTServi
 		orderService: orderServ,
 		jwtService:   jwtServ,
 	}
+}
+
+func (c *orderController) FindDoctor(context *gin.Context) {
+	authHeader := context.GetHeader("Authorization")
+	fmt.Println("AuthHEADER : ", authHeader)
+	token, errToken := c.jwtService.ValidateToken(authHeader)
+
+	if errToken != nil {
+		panic(errToken.Error())
+	}
+	claims := token.Claims.(jwt.MapClaims)
+	user_id, err := strconv.ParseUint(fmt.Sprintf("%v", claims["user_id"]), 10, 64)
+	fmt.Println(user_id, "id")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	userType := fmt.Sprintf("%v", claims["user_type"])
+	if userType == "admin" {
+		id, err := strconv.ParseUint(context.Query("id"), 0, 0)
+		if err != nil {
+			res := helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
+			context.AbortWithStatusJSON(http.StatusBadRequest, res)
+			return
+		}
+		var orders []entity.Order = c.orderService.FindDoctor(id)
+		if len(orders) > 0 {
+			res := helper.BuildResponse(true, "OK", orders)
+			context.JSON(http.StatusOK, res)
+		} else {
+			res := helper.BuildErrorResponse("Data not found", "No data with given id", helper.EmptyObj{})
+			context.JSON(http.StatusNotFound, res)
+		}
+	} else {
+		res := helper.BuildErrorResponse("Permission denied", "Permission denied", helper.EmptyObj{})
+		context.JSON(http.StatusBadRequest, res)
+	}
+
+}
+
+func (c *orderController) FindPharmacist(context *gin.Context) {
+	authHeader := context.GetHeader("Authorization")
+	fmt.Println("AuthHEADER : ", authHeader)
+	token, errToken := c.jwtService.ValidateToken(authHeader)
+
+	if errToken != nil {
+		panic(errToken.Error())
+	}
+	claims := token.Claims.(jwt.MapClaims)
+	user_id, err := strconv.ParseUint(fmt.Sprintf("%v", claims["user_id"]), 10, 64)
+	fmt.Println(user_id, "id")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	userType := fmt.Sprintf("%v", claims["user_type"])
+	if userType == "admin" {
+		id, err := strconv.ParseUint(context.Query("id"), 0, 0)
+		if err != nil {
+			res := helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
+			context.AbortWithStatusJSON(http.StatusBadRequest, res)
+			return
+		}
+		var orders []entity.Order = c.orderService.FindPharmacist(id)
+		if len(orders) > 0 {
+			res := helper.BuildResponse(true, "OK", orders)
+			context.JSON(http.StatusOK, res)
+		} else {
+			res := helper.BuildErrorResponse("Data not found", "No data with given id", helper.EmptyObj{})
+			context.JSON(http.StatusNotFound, res)
+		}
+	}
+
 }
 
 func (c *orderController) All(context *gin.Context) {
