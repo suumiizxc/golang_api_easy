@@ -17,6 +17,8 @@ type OrderController interface {
 	All(context *gin.Context)
 	FindPharmacist(context *gin.Context)
 	FindDoctor(context *gin.Context)
+	FindOrderDoctor(context *gin.Context)
+	FindOrderPharmacist(context *gin.Context)
 }
 
 type orderController struct {
@@ -29,6 +31,70 @@ func NewOrderController(orderServ service.OrderService, jwtServ service.JWTServi
 	return &orderController{
 		orderService: orderServ,
 		jwtService:   jwtServ,
+	}
+}
+
+func (c *orderController) FindOrderDoctor(context *gin.Context) {
+	authHeader := context.GetHeader("Authorization")
+	fmt.Println("AuthHEADER : ", authHeader)
+	token, errToken := c.jwtService.ValidateToken(authHeader)
+
+	if errToken != nil {
+		panic(errToken.Error())
+	}
+	claims := token.Claims.(jwt.MapClaims)
+	user_id, err := strconv.ParseUint(fmt.Sprintf("%v", claims["user_id"]), 10, 64)
+	fmt.Println(user_id, "id")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	userType := fmt.Sprintf("%v", claims["user_type"])
+	if userType == "doctor" {
+
+		var orders []entity.Order = c.orderService.FindDoctor(user_id)
+		if len(orders) > 0 {
+			res := helper.BuildResponse(true, "OK", orders)
+			context.JSON(http.StatusOK, res)
+		} else {
+			res := helper.BuildErrorResponse("Data not found", "No data with given id", helper.EmptyObj{})
+			context.JSON(http.StatusNotFound, res)
+		}
+	} else {
+		res := helper.BuildErrorResponse("Permission denied", "Permission denied", helper.EmptyObj{})
+		context.JSON(http.StatusBadRequest, res)
+	}
+}
+
+func (c *orderController) FindOrderPharmacist(context *gin.Context) {
+	authHeader := context.GetHeader("Authorization")
+	fmt.Println("AuthHEADER : ", authHeader)
+	token, errToken := c.jwtService.ValidateToken(authHeader)
+
+	if errToken != nil {
+		panic(errToken.Error())
+	}
+	claims := token.Claims.(jwt.MapClaims)
+	user_id, err := strconv.ParseUint(fmt.Sprintf("%v", claims["user_id"]), 10, 64)
+	fmt.Println(user_id, "id")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	userType := fmt.Sprintf("%v", claims["user_type"])
+	if userType == "pharmacist" {
+
+		var orders []entity.Order = c.orderService.FindPharmacist(user_id)
+		if len(orders) > 0 {
+			res := helper.BuildResponse(true, "OK", orders)
+			context.JSON(http.StatusOK, res)
+		} else {
+			res := helper.BuildErrorResponse("Data not found", "No data with given id", helper.EmptyObj{})
+			context.JSON(http.StatusNotFound, res)
+		}
+	} else {
+		res := helper.BuildErrorResponse("Permission denied", "Permission denied", helper.EmptyObj{})
+		context.JSON(http.StatusBadRequest, res)
 	}
 }
 

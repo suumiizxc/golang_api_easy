@@ -14,6 +14,7 @@ type OrderService interface {
 	All() []entity.Order
 	FindPharmacist(pharmacistID uint64) []entity.Order
 	FindDoctor(doctorID uint64) []entity.Order
+	FindOrderByID(orderID uint64) entity.Order
 }
 
 type orderService struct {
@@ -52,4 +53,8 @@ func (service *orderService) FindPharmacist(pharmacistID uint64) []entity.Order 
 
 func (service *orderService) FindDoctor(doctorID uint64) []entity.Order {
 	return service.orderRepository.FindByDoctorOrder(doctorID)
+}
+
+func (service *orderService) FindOrderByID(orderID uint64) entity.Order {
+	return service.orderRepository.FindByOrderID(orderID)
 }

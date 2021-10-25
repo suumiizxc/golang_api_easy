@@ -15,6 +15,7 @@ type OrderRepository interface {
 	AllOrder() []entity.Order
 	FindByPharmacistOrder(pharmacistID uint64) []entity.Order
 	FindByDoctorOrder(doctorID uint64) []entity.Order
+	FindByOrderID(orderID uint64) entity.Order
 }
 
 type orderConnection struct {
@@ -30,6 +31,12 @@ func NewOrderRepository(dbConn *gorm.DB) OrderRepository {
 type Bird struct {
 	Product_ID float64
 	Quantity   float64
+}
+
+func (db *orderConnection) FindByOrderID(orderID uint64) entity.Order {
+	var order entity.Order
+	db.connection.Preload("Pharmacist").Preload("Doctor").Find(&order, orderID)
+	return order
 }
 
 func (db *orderConnection) AllOrder() []entity.Order {

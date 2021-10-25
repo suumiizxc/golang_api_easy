@@ -96,10 +96,11 @@ func main() {
 		doctorAuthRoutes.POST("/login", authDoctorController.LoginDoctor)
 		doctorAuthRoutes.POST("/register", authDoctorController.RegisterDoctor)
 	}
-	doctorRoutes := r.Group("api/doctor")
+	doctorRoutes := r.Group("api/doctor", middleware.AuthorizeJWT(jwtService))
 	{
 		doctorRoutes.GET("/profile", doctorController.ProfileDoctor)
 		doctorRoutes.PUT("/update", doctorController.UpdateDoctor)
+		doctorRoutes.GET("/order", orderController.FindOrderDoctor)
 	}
 	pharmacistAuthRoutes := r.Group("api/pharmacist/auth")
 	{
@@ -110,6 +111,7 @@ func main() {
 	{
 		pharmacistRoutes.GET("/profile", pharmacistController.ProfilePharmacist)
 		pharmacistRoutes.PUT("/update", pharmacistController.UpdatePharmacist)
+		pharmacistRoutes.GET("/order", orderController.FindOrderPharmacist)
 	}
 
 	orderRoutes := r.Group("api/order", middleware.AuthorizeJWT(jwtService))
