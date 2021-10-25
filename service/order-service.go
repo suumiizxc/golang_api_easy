@@ -15,6 +15,7 @@ type OrderService interface {
 	FindPharmacist(pharmacistID uint64) []entity.Order
 	FindDoctor(doctorID uint64) []entity.Order
 	FindOrderByID(orderID uint64) entity.Order
+	TranscactBonus() []entity.Order
 }
 
 type orderService struct {
@@ -45,6 +46,10 @@ func (service *orderService) Insert(b entity.Order, tokenID uint64) (entity.Orde
 
 func (service *orderService) All() []entity.Order {
 	return service.orderRepository.AllOrder()
+}
+
+func (service *orderService) TranscactBonus() []entity.Order {
+	return service.orderRepository.TranscactBonus()
 }
 
 func (service *orderService) FindPharmacist(pharmacistID uint64) []entity.Order {

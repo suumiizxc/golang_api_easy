@@ -8,6 +8,7 @@ import (
 
 type Order struct {
 	ID               uint64         `gorm:"primary_key:auto_increment" json:"id"`
+	TrackingNumber   string         `gorm:"varchar(200)" json:"tracking_number"`
 	PharmacistID     uint64         `gorm:"int" json:"pharmacist_id"`
 	Pharmacist       Pharmacist     `gorm:"foreignkey:PharmacistID; constraint:onUpdate:CASCADE,onDelete:CASCADE" json:"pharmacist"`
 	DoctorID         uint64         `gorm:"int" json:"doctor_id"`

@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 
+	uuid "github.com/satori/go.uuid"
 	"github.com/suumiizxc/golang_api/entity"
 	"gorm.io/gorm"
 )
@@ -16,6 +17,7 @@ type OrderRepository interface {
 	FindByPharmacistOrder(pharmacistID uint64) []entity.Order
 	FindByDoctorOrder(doctorID uint64) []entity.Order
 	FindByOrderID(orderID uint64) entity.Order
+	TranscactBonus() []entity.Order
 }
 
 type orderConnection struct {
@@ -41,7 +43,13 @@ func (db *orderConnection) FindByOrderID(orderID uint64) entity.Order {
 
 func (db *orderConnection) AllOrder() []entity.Order {
 	var orders []entity.Order
-	db.connection.Preload("Orders").Find(&orders)
+	db.connection.Preload("Pharmacist").Preload("Doctor").Find(&orders)
+	return orders
+}
+
+func (db *orderConnection) TranscactBonus() []entity.Order {
+	var orders []entity.Order
+	db.connection.Preload("Pharmacist").Preload("Doctor").Where("status = 'pending'").Find(&orders)
 	return orders
 }
 
@@ -88,6 +96,10 @@ func (db *orderConnection) InsertOrder(b entity.Order) entity.Order {
 	b.TotalPrice = total_price
 	b.CouponDoctor = doctor_coupon
 	b.CouponPharmacist = pharmacist_coupon
+
+	myuuid := uuid.NewV4()
+	// fmt.Println("Your UUID is: %s", myuuid)
+	b.TrackingNumber = myuuid.String()
 
 	db.connection.Model(&doctorS).Find(&doctorS, b.DoctorID)
 	db.connection.Model(&pharmacistS).Find(&pharmacistS, b.PharmacistID)

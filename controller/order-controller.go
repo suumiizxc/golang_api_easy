@@ -19,6 +19,7 @@ type OrderController interface {
 	FindDoctor(context *gin.Context)
 	FindOrderDoctor(context *gin.Context)
 	FindOrderPharmacist(context *gin.Context)
+	TranscactBonus(context *gin.Context)
 }
 
 type orderController struct {
@@ -188,6 +189,32 @@ func (c *orderController) All(context *gin.Context) {
 	}
 	userType := fmt.Sprintf("%v", claims["user_type"])
 	if userType == "admin" {
+		res := helper.BuildResponseWithCount(true, "OK", orders, len(orders))
+		fmt.Println("Order count", len(orders))
+		context.JSON(http.StatusOK, res)
+	} else {
+		res := helper.BuildErrorResponse("Permission denied", "Permission denied", helper.EmptyObj{})
+		context.JSON(http.StatusBadRequest, res)
+	}
+}
+
+func (c *orderController) TranscactBonus(context *gin.Context) {
+	authHeader := context.GetHeader("Authorization")
+	fmt.Println("AuthHEADER : ", authHeader)
+	token, errToken := c.jwtService.ValidateToken(authHeader)
+
+	if errToken != nil {
+		panic(errToken.Error())
+	}
+	claims := token.Claims.(jwt.MapClaims)
+	id, err := strconv.ParseUint(fmt.Sprintf("%v", claims["user_id"]), 10, 64)
+	fmt.Println(id, "id")
+	if err != nil {
+		panic(err.Error())
+	}
+	userType := fmt.Sprintf("%v", claims["user_type"])
+	if userType == "admin" {
+		var orders []entity.Order = c.orderService.TranscactBonus()
 		res := helper.BuildResponseWithCount(true, "OK", orders, len(orders))
 		fmt.Println("Order count", len(orders))
 		context.JSON(http.StatusOK, res)

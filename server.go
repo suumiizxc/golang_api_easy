@@ -120,6 +120,7 @@ func main() {
 		orderRoutes.GET("/", orderController.All)
 		orderRoutes.GET("/doctor", orderController.FindDoctor)
 		orderRoutes.GET("/pharmacist", orderController.FindPharmacist)
+		orderRoutes.POST("/transact-bonus", orderController.TranscactBonus)
 	}
 
 	r.Run()
