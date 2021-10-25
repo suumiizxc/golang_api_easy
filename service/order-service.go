@@ -11,6 +11,7 @@ import (
 
 type OrderService interface {
 	Insert(b entity.Order, tokenID uint64) (entity.Order, error)
+	All() []entity.Order
 }
 
 type orderService struct {
@@ -37,4 +38,8 @@ func (service *orderService) Insert(b entity.Order, tokenID uint64) (entity.Orde
 		return order, errors.New("empty name")
 	}
 
+}
+
+func (service *orderService) All() []entity.Order {
+	return service.orderRepository.AllOrder()
 }

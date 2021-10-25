@@ -12,6 +12,7 @@ import (
 
 type OrderRepository interface {
 	InsertOrder(b entity.Order) entity.Order
+	AllOrder() []entity.Order
 }
 
 type orderConnection struct {
@@ -27,6 +28,12 @@ func NewOrderRepository(dbConn *gorm.DB) OrderRepository {
 type Bird struct {
 	Product_ID float64
 	Quantity   float64
+}
+
+func (db *orderConnection) AllOrder() []entity.Order {
+	var orders []entity.Order
+	db.connection.Preload("Orders").Find(&orders)
+	return orders
 }
 
 func (db *orderConnection) InsertOrder(b entity.Order) entity.Order {

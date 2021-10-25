@@ -18,6 +18,7 @@ var (
 	doctorRepository     repository.DoctorRepository     = repository.NewDoctorRepository(db)
 	pharmacistRepository repository.PharmacistRepository = repository.NewPharmacistRepository(db)
 	orderRepository      repository.OrderRepository      = repository.NewOrderRepository(db)
+	challengeRepository  repository.ChallengeRepository  = repository.NewChallengeRepository(db)
 
 	jwtService            service.JWTService            = service.NewJWTService()
 	userService           service.UserService           = service.NewUserService(userRepository)
@@ -29,6 +30,7 @@ var (
 	pharmacistService     service.PharmacistService     = service.NewPharmacistService(pharmacistRepository)
 	authPharmacistService service.AuthPharmacistService = service.NewAuthPharmacistService(pharmacistRepository)
 	orderService          service.OrderService          = service.NewOrderService(orderRepository)
+	challangeService      service.ChallangeService      = service.NewChallengeService(challengeRepository)
 
 	authController           controller.AuthController           = controller.NewAuthController(authService, jwtService)
 	userController           controller.UserController           = controller.NewUserController(userService, jwtService)
@@ -39,6 +41,7 @@ var (
 	authPharmacistController controller.AuthPharmacistController = controller.NewAuthPharmacistController(authPharmacistService, jwtService)
 	pharmacistController     controller.PharmacistController     = controller.NewPharmacistController(pharmacistService, jwtService)
 	orderController          controller.OrderController          = controller.NewOrderController(orderService, jwtService)
+	challengeController      controller.ChallengeController      = controller.NewChallengeController(challangeService, jwtService)
 )
 
 func CORSMiddleware() gin.HandlerFunc {
@@ -74,6 +77,7 @@ func main() {
 		userRoutes.PUT("/update", userController.Update)
 		userRoutes.GET("/alldoctors", userController.AllDoctors)
 		userRoutes.GET("/allpharmacists", userController.AllPharmacist)
+		userRoutes.POST("/create-challenge", challengeController.Insert)
 	}
 	bookRoutes := r.Group("api/products", middleware.AuthorizeJWT(jwtService))
 	{
@@ -111,6 +115,7 @@ func main() {
 	orderRoutes := r.Group("api/order", middleware.AuthorizeJWT(jwtService))
 	{
 		orderRoutes.POST("/", orderController.Insert)
+		orderRoutes.GET("/", orderController.All)
 	}
 	r.Run()
 }

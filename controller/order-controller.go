@@ -14,6 +14,7 @@ import (
 
 type OrderController interface {
 	Insert(context *gin.Context)
+	All(context *gin.Context)
 }
 
 type orderController struct {
@@ -26,6 +27,32 @@ func NewOrderController(orderServ service.OrderService, jwtServ service.JWTServi
 	return &orderController{
 		orderService: orderServ,
 		jwtService:   jwtServ,
+	}
+}
+
+func (c *orderController) All(context *gin.Context) {
+	var orders []entity.Order = c.orderService.All()
+	authHeader := context.GetHeader("Authorization")
+	fmt.Println("AuthHEADER : ", authHeader)
+	token, errToken := c.jwtService.ValidateToken(authHeader)
+
+	if errToken != nil {
+		panic(errToken.Error())
+	}
+	claims := token.Claims.(jwt.MapClaims)
+	id, err := strconv.ParseUint(fmt.Sprintf("%v", claims["user_id"]), 10, 64)
+	fmt.Println(id, "id")
+	if err != nil {
+		panic(err.Error())
+	}
+	userType := fmt.Sprintf("%v", claims["user_type"])
+	if userType == "admin" {
+		res := helper.BuildResponseWithCount(true, "OK", orders, len(orders))
+		fmt.Println("Order count", len(orders))
+		context.JSON(http.StatusOK, res)
+	} else {
+		res := helper.BuildErrorResponse("Permission denied", "Permission denied", helper.EmptyObj{})
+		context.JSON(http.StatusBadRequest, res)
 	}
 }
 

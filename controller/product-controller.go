@@ -39,7 +39,7 @@ func (c *productController) All(context *gin.Context) {
 
 	var products []entity.Product = c.productService.All()
 	res := helper.BuildResponseWithCount(true, "OK", products, len(products))
-	fmt.Println("Books count", len(products))
+	fmt.Println("Product count", len(products))
 	context.JSON(http.StatusOK, res)
 }
 
