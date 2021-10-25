@@ -59,7 +59,7 @@ func (c *orderController) FindOrderDoctor(context *gin.Context) {
 			context.JSON(http.StatusOK, res)
 		} else {
 			res := helper.BuildResponse(true, "OK", helper.EmptyObj{})
-			context.JSON(http.StatusNotFound, res)
+			context.JSON(http.StatusOK, res)
 		}
 	} else {
 		res := helper.BuildErrorResponse("Permission denied", "Permission denied", helper.EmptyObj{})
