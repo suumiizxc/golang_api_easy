@@ -58,7 +58,7 @@ func (c *orderController) FindOrderDoctor(context *gin.Context) {
 			res := helper.BuildResponse(true, "OK", orders)
 			context.JSON(http.StatusOK, res)
 		} else {
-			res := helper.BuildErrorResponse("Data not found", "No data with given id", helper.EmptyObj{})
+			res := helper.BuildResponse(true, "OK", helper.EmptyObj{})
 			context.JSON(http.StatusNotFound, res)
 		}
 	} else {
