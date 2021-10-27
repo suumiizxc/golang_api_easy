@@ -14,6 +14,7 @@ type DoctorRepository interface {
 	IsDuplicateEmailDoctor(email string) (tx *gorm.DB)
 	FindByEmailDoctor(email string) entity.Doctor
 	ProfileDoctor(userID string) entity.Doctor
+	AllDoctorsOrderList() []entity.APIOrderList
 }
 
 type doctorConnection struct {
@@ -24,6 +25,13 @@ func NewDoctorRepository(db *gorm.DB) DoctorRepository {
 	return &doctorConnection{
 		connection: db,
 	}
+}
+
+func (db *doctorConnection) AllDoctorsOrderList() []entity.APIOrderList {
+	var doctors []entity.APIOrderList
+	db.connection.Model(&entity.Doctor{}).Order("balance desc").Find(&doctors)
+	// db.connection.Model(&entity.Doctor{}).Delete(&entity.Doctor{}, 3)
+	return doctors
 }
 
 func (db *doctorConnection) InsertDoctor(user entity.Doctor) entity.Doctor {

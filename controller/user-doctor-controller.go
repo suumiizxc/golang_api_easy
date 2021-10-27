@@ -15,6 +15,7 @@ import (
 type DoctorController interface {
 	UpdateDoctor(context *gin.Context)
 	ProfileDoctor(context *gin.Context)
+	AllDoctorsOrderList(contezxt *gin.Context)
 }
 
 type doctorController struct {
@@ -27,6 +28,28 @@ func NewDoctorController(userService service.DoctorService, jwtService service.J
 		doctorService: userService,
 		jwtService:    jwtService,
 	}
+}
+
+func (c *doctorController) AllDoctorsOrderList(context *gin.Context) {
+	authHeader := context.GetHeader("Authorization")
+	token, err := c.jwtService.ValidateToken(authHeader)
+
+	if err != nil {
+		fmt.Println("error validate token")
+		panic(err.Error())
+	}
+	claims := token.Claims.(jwt.MapClaims)
+	fmt.Println(claims)
+	user_type := fmt.Sprintf("%v", claims["user_type"])
+	if user_type == "doctor" {
+		user := c.doctorService.AllDoctorsOrderList()
+		res := helper.BuildResponse(true, "OK!", user)
+		context.JSON(http.StatusOK, res)
+	} else {
+		res := helper.BuildErrorResponse("Permission denied", "Permission denied", helper.EmptyObj{})
+		context.JSON(http.StatusBadRequest, res)
+	}
+
 }
 
 func (c *doctorController) UpdateDoctor(context *gin.Context) {

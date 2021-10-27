@@ -14,6 +14,7 @@ import (
 type OrderRepository interface {
 	InsertOrder(b entity.Order) entity.Order
 	AllOrder() []entity.Order
+	// DoctorOrders(page uint64, paginition uint64, ordering string) []entity.Order
 	FindByPharmacistOrder(pharmacistID uint64) []entity.Order
 	FindByDoctorOrder(doctorID uint64) []entity.Order
 	FindByOrderID(orderID uint64) entity.Order
@@ -46,6 +47,13 @@ func (db *orderConnection) AllOrder() []entity.Order {
 	db.connection.Preload("Pharmacist").Preload("Doctor").Find(&orders)
 	return orders
 }
+
+// func (db *orderConnection) DoctorOrders(page uint64, paginition uint64, ordering string) []entity.Order {
+// 	var orders []entity.Order
+// 	offset := (page-1)*paginition + 1
+// 	db.connection.Preload("Pharmacist").Preload("Doctor").Offset(int(offset)).Limit(int(paginition)).Find(&orders)
+// 	return orders
+// }
 
 func (db *orderConnection) TranscactBonus() []entity.Order {
 	var orders []entity.Order

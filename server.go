@@ -101,6 +101,7 @@ func main() {
 		doctorRoutes.GET("/profile", doctorController.ProfileDoctor)
 		doctorRoutes.PUT("/update", doctorController.UpdateDoctor)
 		doctorRoutes.GET("/order", orderController.FindOrderDoctor)
+		doctorRoutes.GET("/order/all-doctors", doctorController.AllDoctorsOrderList)
 	}
 	pharmacistAuthRoutes := r.Group("api/pharmacist/auth")
 	{

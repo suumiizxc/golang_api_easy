@@ -21,3 +21,11 @@ type Doctor struct {
 	Balance   float64   `gorm:"type:float" json:"balance"`
 	UpdatedAt time.Time `gorm:"column:updated_at" json:"updated_at"`
 }
+
+type APIOrderList struct {
+	ID           uint64
+	FirstName    string
+	LastName     string
+	ProfileImage string
+	Balance      float64
+}
