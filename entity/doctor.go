@@ -23,7 +23,6 @@ type Doctor struct {
 }
 
 type APIOrderList struct {
-	ID           uint64
 	FirstName    string
 	LastName     string
 	ProfileImage string
