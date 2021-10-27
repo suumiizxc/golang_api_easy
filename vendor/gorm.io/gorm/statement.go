@@ -6,6 +6,7 @@ import (
 	"database/sql/driver"
 	"fmt"
 	"reflect"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -75,30 +76,36 @@ func (stmt *Statement) WriteQuoted(value interface{}) {
 
 // QuoteTo write quoted value to writer
 func (stmt *Statement) QuoteTo(writer clause.Writer, field interface{}) {
+	write := func(raw bool, str string) {
+		if raw {
+			writer.WriteString(str)
+		} else {
+			stmt.DB.Dialector.QuoteTo(writer, str)
+		}
+	}
+
 	switch v := field.(type) {
 	case clause.Table:
 		if v.Name == clause.CurrentTable {
 			if stmt.TableExpr != nil {
 				stmt.TableExpr.Build(stmt)
 			} else {
-				stmt.DB.Dialector.QuoteTo(writer, stmt.Table)
+				write(v.Raw, stmt.Table)
 			}
-		} else if v.Raw {
-			writer.WriteString(v.Name)
 		} else {
-			stmt.DB.Dialector.QuoteTo(writer, v.Name)
+			write(v.Raw, v.Name)
 		}
 
 		if v.Alias != "" {
 			writer.WriteByte(' ')
-			stmt.DB.Dialector.QuoteTo(writer, v.Alias)
+			write(v.Raw, v.Alias)
 		}
 	case clause.Column:
 		if v.Table != "" {
 			if v.Table == clause.CurrentTable {
-				stmt.DB.Dialector.QuoteTo(writer, stmt.Table)
+				write(v.Raw, stmt.Table)
 			} else {
-				stmt.DB.Dialector.QuoteTo(writer, v.Table)
+				write(v.Raw, v.Table)
 			}
 			writer.WriteByte('.')
 		}
@@ -107,19 +114,17 @@ func (stmt *Statement) QuoteTo(writer clause.Writer, field interface{}) {
 			if stmt.Schema == nil {
 				stmt.DB.AddError(ErrModelValueRequired)
 			} else if stmt.Schema.PrioritizedPrimaryField != nil {
-				stmt.DB.Dialector.QuoteTo(writer, stmt.Schema.PrioritizedPrimaryField.DBName)
+				write(v.Raw, stmt.Schema.PrioritizedPrimaryField.DBName)
 			} else if len(stmt.Schema.DBNames) > 0 {
-				stmt.DB.Dialector.QuoteTo(writer, stmt.Schema.DBNames[0])
+				write(v.Raw, stmt.Schema.DBNames[0])
 			}
-		} else if v.Raw {
-			writer.WriteString(v.Name)
 		} else {
-			stmt.DB.Dialector.QuoteTo(writer, v.Name)
+			write(v.Raw, v.Name)
 		}
 
 		if v.Alias != "" {
 			writer.WriteString(" AS ")
-			stmt.DB.Dialector.QuoteTo(writer, v.Alias)
+			write(v.Raw, v.Alias)
 		}
 	case []clause.Column:
 		writer.WriteByte('(')
@@ -267,13 +272,19 @@ func (stmt *Statement) BuildCondition(query interface{}, args ...interface{}) []
 		if _, err := strconv.Atoi(s); err != nil {
 			if s == "" && len(args) == 0 {
 				return nil
-			} else if len(args) == 0 || (len(args) > 0 && strings.Contains(s, "?")) {
+			}
+
+			if len(args) == 0 || (len(args) > 0 && strings.Contains(s, "?")) {
 				// looks like a where condition
 				return []clause.Expression{clause.Expr{SQL: s, Vars: args}}
-			} else if len(args) > 0 && strings.Contains(s, "@") {
+			}
+
+			if len(args) > 0 && strings.Contains(s, "@") {
 				// looks like a named query
 				return []clause.Expression{clause.NamedExpr{SQL: s, Vars: args}}
-			} else if len(args) == 1 {
+			}
+
+			if len(args) == 1 {
 				return []clause.Expression{clause.Eq{Column: s, Value: args[0]}}
 			}
 		}
@@ -617,6 +628,8 @@ func (stmt *Statement) Changed(fields ...string) bool {
 	return false
 }
 
+var nameMatcher = regexp.MustCompile(`^[\W]?(?:[a-z_]+?)[\W]?\.[\W]?([a-z_]+?)[\W]?$`)
+
 // SelectAndOmitColumns get select and omit columns, select -> true, omit -> false
 func (stmt *Statement) SelectAndOmitColumns(requireCreate, requireUpdate bool) (map[string]bool, bool) {
 	results := map[string]bool{}
@@ -637,6 +650,8 @@ func (stmt *Statement) SelectAndOmitColumns(requireCreate, requireUpdate bool) (
 			}
 		} else if field := stmt.Schema.LookUpField(column); field != nil && field.DBName != "" {
 			results[field.DBName] = true
+		} else if matches := nameMatcher.FindStringSubmatch(column); len(matches) == 2 {
+			results[matches[1]] = true
 		} else {
 			results[column] = true
 		}
@@ -652,6 +667,8 @@ func (stmt *Statement) SelectAndOmitColumns(requireCreate, requireUpdate bool) (
 			}
 		} else if field := stmt.Schema.LookUpField(omit); field != nil && field.DBName != "" {
 			results[field.DBName] = false
+		} else if matches := nameMatcher.FindStringSubmatch(omit); len(matches) == 2 {
+			results[matches[1]] = false
 		} else {
 			results[omit] = false
 		}
