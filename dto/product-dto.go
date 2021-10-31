@@ -11,6 +11,7 @@ type ProductUpdateDTO struct {
 	UserID          uint64  `json:"user_id,omitempty" form:"user_id,omitempty"`
 	PharmacistPoint float64 `json:"pharmacist_point" form:"pharmacist_point" binding:"required"`
 	DoctorPoint     float64 `json:"doctor_point" form:"doctor_point" binding:"required"`
+	IsUnitAble      bool    `json:"is_unit_able" form:"is_unit_able" binding:"required"`
 }
 
 type ProductCreateDTO struct {
@@ -23,4 +24,5 @@ type ProductCreateDTO struct {
 	UserID          uint64  `json:"user_id,omitempty" form:"user_id,omitempty"`
 	PharmacistPoint float64 `json:"pharmacist_point" form:"pharmacist_point" binding:"required"`
 	DoctorPoint     float64 `json:"doctor_point" form:"doctor_point" binding:"required"`
+	IsUnitAble      bool    `json:"is_unit_able" form:"is_unit_able" binding:"required"`
 }

@@ -47,7 +47,7 @@ func (db *doctorConnection) UpdateDoctor(user entity.Doctor) entity.Doctor {
 	var userFind entity.Doctor
 	db.connection.Preload("User").Find(&userFind, user.ID)
 	user.UserType = userFind.UserType
-	user.Balance = userFind.Balance
+	// user.Balance = userFind.Balance
 	user.UpdatedAt = time.Now()
 	db.connection.Save(&user)
 	return user

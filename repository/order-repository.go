@@ -3,8 +3,6 @@ package repository
 import (
 	"encoding/json"
 	"fmt"
-	"os"
-	"strconv"
 
 	uuid "github.com/satori/go.uuid"
 	"github.com/suumiizxc/golang_api/entity"
@@ -78,14 +76,14 @@ func (db *orderConnection) InsertOrder(b entity.Order) entity.Order {
 	var pharmacistC entity.Pharmacist
 	var doctorS entity.Doctor
 	var pharmacistS entity.Pharmacist
-	doctor_coupon_rate, err := strconv.ParseFloat(os.Getenv("DOCTOR_COUPON_RATE"), 64)
-	if err != nil {
-		panic(err.Error())
-	}
-	pharmacist_coupon_rate, err := strconv.ParseFloat(os.Getenv("PHARMACIST_COUPON_RATE"), 64)
-	if err != nil {
-		panic(err.Error())
-	}
+	// doctor_coupon_rate, err := strconv.ParseFloat(os.Getenv("DOCTOR_COUPON_RATE"), 64)
+	// if err != nil {
+	// 	panic(err.Error())
+	// }
+	// pharmacist_coupon_rate, err := strconv.ParseFloat(os.Getenv("PHARMACIST_COUPON_RATE"), 64)
+	// if err != nil {
+	// 	panic(err.Error())
+	// }
 	// fmt.Println("Repo:", b.List)
 	var bird []Bird
 	b.Status = "pending"
@@ -100,9 +98,9 @@ func (db *orderConnection) InsertOrder(b entity.Order) entity.Order {
 		var product entity.Product
 		db.connection.Preload("User").Find(&product, v.Product_ID)
 		total_price = total_price + float64(product.Price)*float64(v.Quantity)
-		doctor_coupon = doctor_coupon + float64(product.Price)*doctor_coupon_rate*float64(v.Quantity)
+		// doctor_coupon = doctor_coupon + float64(product.Price)*doctor_coupon_rate*float64(v.Quantity)
 		claimed_point_doctor = claimed_point_doctor + float64(product.DoctorPoint)*float64(v.Quantity)
-		pharmacist_coupon = pharmacist_coupon + float64(product.Price)*pharmacist_coupon_rate*float64(v.Quantity)
+		// pharmacist_coupon = pharmacist_coupon + float64(product.Price)*pharmacist_coupon_rate*float64(v.Quantity)
 		claimed_point_pharmacist = claimed_point_pharmacist + float64(product.PharmacistPoint)*float64(v.Quantity)
 	}
 	b.TotalPrice = total_price
@@ -117,8 +115,8 @@ func (db *orderConnection) InsertOrder(b entity.Order) entity.Order {
 	db.connection.Model(&pharmacistS).Find(&pharmacistS, b.PharmacistID)
 	fmt.Println("DOCTORS : ", doctorS)
 
-	db.connection.Model(&doctorC).Where("id = ?", b.DoctorID).Update("balance", (doctor_coupon+doctorS.Balance)).Update("claimed_point", claimed_point_doctor+doctorS.ClaimedPoint)
-	db.connection.Model(&pharmacistC).Where("id = ?", b.PharmacistID).Update("balance", (pharmacist_coupon+pharmacistS.Balance)).Update("claimed_point", claimed_point_pharmacist+pharmacistS.ClaimedPoint)
+	db.connection.Model(&doctorC).Where("id = ?", b.DoctorID).Update("claimed_point", claimed_point_doctor+doctorS.ClaimedPoint)
+	db.connection.Model(&pharmacistC).Where("id = ?", b.PharmacistID).Update("claimed_point", claimed_point_pharmacist+pharmacistS.ClaimedPoint)
 
 	db.connection.Save(&b)
 	db.connection.Preload("Pharmacist").Preload("Doctor").Find(&b)

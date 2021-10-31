@@ -14,5 +14,6 @@ type Product struct {
 	User            User      `gorm:"foreignkey:UserID; constraint:onUpdate:CASCADE,onDelete:CASCADE" json:"user"`
 	PharmacistPoint float64   `gorm:"type:float" json:"pharmacist_point"`
 	DoctorPoint     float64   `gorm:"type:float" json:"doctor_point"`
+	IsUnitAble      bool      `gorm:"bool" json:"is_unit_able"`
 	UpdatedAt       time.Time `gorm:"column:updated_at" json:"updated_at"`
 }
