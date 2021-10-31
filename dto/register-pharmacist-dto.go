@@ -11,4 +11,6 @@ type RegisterPharmacistDTO struct {
 	BankName          string `json:"bank_name" form:"bank_name" binding:"required" validate:"bank_name"`
 	BankAccountNumber string `json:"bank_account_number" form:"bank_account_name" binding:"required" validate:"bank_account_number"`
 	BankAccountHolder string `json:"bank_account_holder" form:"bank_account_holder" binding:"required" validate:"bank_account_holder"`
+	PharmName         string `json:"pharm_name" form:"pharm_name" binding:"required" validate:"pharm_name"`
+	PharmAddress      string `json:"pharm_address" form:"pharm_address" binding:"required" validate:"pharm_address"`
 }

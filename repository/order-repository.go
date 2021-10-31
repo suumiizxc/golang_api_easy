@@ -63,13 +63,13 @@ func (db *orderConnection) TranscactBonus() []entity.Order {
 
 func (db *orderConnection) FindByPharmacistOrder(pharmacistID uint64) []entity.Order {
 	var orders []entity.Order
-	db.connection.Preload("Pharmacist").Preload("Doctor").Where("pharmacist_id = ?", pharmacistID).Find(&orders)
+	db.connection.Preload("Pharmacist").Preload("Doctor").Where("pharmacist_id = ?", pharmacistID).Order("updated_at desc").Find(&orders)
 	return orders
 }
 
 func (db *orderConnection) FindByDoctorOrder(doctorID uint64) []entity.Order {
 	var orders []entity.Order
-	db.connection.Preload("Pharmacist").Preload("Doctor").Where("doctor_id = ?", doctorID).Find(&orders)
+	db.connection.Preload("Pharmacist").Preload("Doctor").Where("doctor_id = ?", doctorID).Order("updated_at desc").Find(&orders)
 	return orders
 }
 
@@ -93,13 +93,17 @@ func (db *orderConnection) InsertOrder(b entity.Order) entity.Order {
 	var total_price float64
 	var doctor_coupon float64
 	var pharmacist_coupon float64
+	var claimed_point_doctor float64
+	var claimed_point_pharmacist float64
 	for i, v := range bird {
 		fmt.Println("ID :", i, " object:", v.Product_ID)
 		var product entity.Product
 		db.connection.Preload("User").Find(&product, v.Product_ID)
 		total_price = total_price + float64(product.Price)*float64(v.Quantity)
 		doctor_coupon = doctor_coupon + float64(product.Price)*doctor_coupon_rate*float64(v.Quantity)
+		claimed_point_doctor = claimed_point_doctor + float64(product.DoctorPoint)*float64(v.Quantity)
 		pharmacist_coupon = pharmacist_coupon + float64(product.Price)*pharmacist_coupon_rate*float64(v.Quantity)
+		claimed_point_pharmacist = claimed_point_pharmacist + float64(product.PharmacistPoint)*float64(v.Quantity)
 	}
 	b.TotalPrice = total_price
 	b.CouponDoctor = doctor_coupon
@@ -113,8 +117,8 @@ func (db *orderConnection) InsertOrder(b entity.Order) entity.Order {
 	db.connection.Model(&pharmacistS).Find(&pharmacistS, b.PharmacistID)
 	fmt.Println("DOCTORS : ", doctorS)
 
-	db.connection.Model(&doctorC).Where("id = ?", b.DoctorID).Update("balance", (doctor_coupon + doctorS.Balance))
-	db.connection.Model(&pharmacistC).Where("id = ?", b.PharmacistID).Update("balance", (pharmacist_coupon + pharmacistS.Balance))
+	db.connection.Model(&doctorC).Where("id = ?", b.DoctorID).Update("balance", (doctor_coupon+doctorS.Balance)).Update("claimed_point", claimed_point_doctor+doctorS.ClaimedPoint)
+	db.connection.Model(&pharmacistC).Where("id = ?", b.PharmacistID).Update("balance", (pharmacist_coupon+pharmacistS.Balance)).Update("claimed_point", claimed_point_pharmacist+pharmacistS.ClaimedPoint)
 
 	db.connection.Save(&b)
 	db.connection.Preload("Pharmacist").Preload("Doctor").Find(&b)
