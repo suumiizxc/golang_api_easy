@@ -14,6 +14,7 @@ type PharmacistRepository interface {
 	IsDuplicateEmailPharmacist(email string) (tx *gorm.DB)
 	FindByEmailPharmacist(email string) entity.Pharmacist
 	ProfilePharmacist(userID string) entity.Pharmacist
+	AllPharmacistOrderList() []entity.APIOrderList
 }
 
 type pharmacistConnection struct {
@@ -26,10 +27,18 @@ func NewPharmacistRepository(db *gorm.DB) PharmacistRepository {
 	}
 }
 
+func (db *pharmacistConnection) AllPharmacistOrderList() []entity.APIOrderList {
+	var pharmacists []entity.APIOrderList
+	db.connection.Model(&entity.Pharmacist{}).Order("claimed_point desc").Find(&pharmacists)
+	// db.connection.Model(&entity.Doctor{}).Delete(&entity.Doctor{}, 3)
+	return pharmacists
+}
+
 func (db *pharmacistConnection) InsertPharmacist(user entity.Pharmacist) entity.Pharmacist {
 	user.Password = hashAndSalt([]byte(user.Password))
 	user.UserType = "pharmacist"
 	user.UpdatedAt = time.Now()
+	user.ClaimedPoint = 0
 	db.connection.Save(&user)
 	return user
 }

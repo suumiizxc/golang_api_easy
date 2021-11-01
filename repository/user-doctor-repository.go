@@ -29,7 +29,7 @@ func NewDoctorRepository(db *gorm.DB) DoctorRepository {
 
 func (db *doctorConnection) AllDoctorsOrderList() []entity.APIOrderList {
 	var doctors []entity.APIOrderList
-	db.connection.Model(&entity.Doctor{}).Order("balance desc").Find(&doctors)
+	db.connection.Model(&entity.Doctor{}).Order("claimed_point desc").Find(&doctors)
 	// db.connection.Model(&entity.Doctor{}).Delete(&entity.Doctor{}, 3)
 	return doctors
 }
@@ -38,6 +38,7 @@ func (db *doctorConnection) InsertDoctor(user entity.Doctor) entity.Doctor {
 	user.Password = hashAndSalt([]byte(user.Password))
 	user.UserType = "doctor"
 	user.UpdatedAt = time.Now()
+	user.ClaimedPoint = 0
 	db.connection.Save(&user)
 	return user
 }

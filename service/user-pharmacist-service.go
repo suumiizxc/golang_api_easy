@@ -12,6 +12,7 @@ import (
 type PharmacistService interface {
 	UpdatePharmacist(user dto.PharmacistUpdateDTO) entity.Pharmacist
 	ProfilePharmacist(userID string) entity.Pharmacist
+	AllPharmacistOrderList() []entity.APIOrderList
 }
 
 type pharmacistService struct {
@@ -22,6 +23,10 @@ func NewPharmacistService(pharmacistRepo repository.PharmacistRepository) Pharma
 	return &pharmacistService{
 		pharmacistRepository: pharmacistRepo,
 	}
+}
+
+func (service *pharmacistService) AllPharmacistOrderList() []entity.APIOrderList {
+	return service.pharmacistRepository.AllPharmacistOrderList()
 }
 
 func (service *pharmacistService) UpdatePharmacist(user dto.PharmacistUpdateDTO) entity.Pharmacist {

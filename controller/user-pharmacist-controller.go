@@ -15,6 +15,7 @@ import (
 type PharmacistController interface {
 	UpdatePharmacist(context *gin.Context)
 	ProfilePharmacist(context *gin.Context)
+	AllPharmacistOrderList(context *gin.Context)
 }
 
 type pharmacistController struct {
@@ -27,6 +28,28 @@ func NewPharmacistController(pharmacistService service.PharmacistService, jwtSer
 		pharmacistService: pharmacistService,
 		jwtService:        jwtService,
 	}
+}
+
+func (c *pharmacistController) AllPharmacistOrderList(context *gin.Context) {
+	authHeader := context.GetHeader("Authorization")
+	token, err := c.jwtService.ValidateToken(authHeader)
+
+	if err != nil {
+		fmt.Println("error validate token")
+		panic(err.Error())
+	}
+	claims := token.Claims.(jwt.MapClaims)
+	fmt.Println(claims)
+	user_type := fmt.Sprintf("%v", claims["user_type"])
+	if user_type == "pharmacist" {
+		user := c.pharmacistService.AllPharmacistOrderList()
+		res := helper.BuildResponse(true, "OK!", user)
+		context.JSON(http.StatusOK, res)
+	} else {
+		res := helper.BuildErrorResponse("Permission denied", "Permission denied", helper.EmptyObj{})
+		context.JSON(http.StatusBadRequest, res)
+	}
+
 }
 
 func (c *pharmacistController) UpdatePharmacist(context *gin.Context) {

@@ -113,6 +113,7 @@ func main() {
 		pharmacistRoutes.GET("/profile", pharmacistController.ProfilePharmacist)
 		pharmacistRoutes.PUT("/update", pharmacistController.UpdatePharmacist)
 		pharmacistRoutes.GET("/order", orderController.FindOrderPharmacist)
+		pharmacistRoutes.GET("/order/all-pharmacists", pharmacistController.AllPharmacistOrderList)
 	}
 
 	orderRoutes := r.Group("api/order", middleware.AuthorizeJWT(jwtService))

@@ -25,8 +25,10 @@ type Doctor struct {
 }
 
 type APIOrderList struct {
-	FirstName    string
-	LastName     string
-	ProfileImage string
-	Balance      float64
+	// FirstName    string
+	// LastName     string
+	// ProfileImage string
+	ID uint64
+	// Balance float64
+	ClaimedPoint float64
 }

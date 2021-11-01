@@ -15,7 +15,7 @@ import (
 type DoctorController interface {
 	UpdateDoctor(context *gin.Context)
 	ProfileDoctor(context *gin.Context)
-	AllDoctorsOrderList(contezxt *gin.Context)
+	AllDoctorsOrderList(context *gin.Context)
 }
 
 type doctorController struct {
