@@ -19,14 +19,15 @@ type Doctor struct {
 	UserType          string `gorm:"type:varchar(20)" json:"user_type"`
 	HospitalName      string `gorm:"type:varchar(255)" json:"hospital_name"`
 	DoctorAddress     string `gorm:"type:varchar(255)" json:"doctor_address"`
+	DoctorGuarentee   string `gorm:"type:varchar(255)" json:"doctor_guarentee"`
 	// Balance           float64   `gorm:"type:float" json:"balance"`
 	ClaimedPoint float64   `gorm:"type:float" json:"claimed_point"`
 	UpdatedAt    time.Time `gorm:"column:updated_at" json:"updated_at"`
 }
 
 type APIOrderList struct {
-	// FirstName    string
-	// LastName     string
+	FirstName string
+	LastName  string
 	// ProfileImage string
 	ID uint64
 	// Balance float64

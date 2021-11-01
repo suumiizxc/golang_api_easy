@@ -13,4 +13,5 @@ type RegisterDoctorDTO struct {
 	BankAccountHolder string `json:"bank_account_holder" form:"bank_account_holder" binding:"required" validate:"bank_account_holder"`
 	HospitalName      string `json:"hospital_name" form:"hospital_name" binding:"required" validate:"hospital_name"`
 	DoctorAddress     string `json:"doctor_address" form:"doctor_address" binding:"required" validate:"doctor_address"`
+	DoctorGuarentee   string `json:"doctor_guarentee" form:"doctor_guarentee" binding:"required" validate:"doctor_guarentee"`
 }

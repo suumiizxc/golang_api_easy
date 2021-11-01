@@ -11,6 +11,8 @@ docker run -d -p 8080:8080 golang_api
 scp Insomnia-All_2021-10-07.json root@178.128.83.147:/home/deploy/insomnia
 npx insomnia-documenter --config Insomnia-All_2021-10-07.json
 npx insomnia-documenter --config Insomnia-All_2021-10-07.json --output Insomnia-golang-api
+
+//Startin document server
 npx serve
 
 
